@@ -1,0 +1,39 @@
+<project name="Atlanta-Traffic-Analysis" default="compile" basedir=".">
+
+  <property environment="env"/>
+  <property name="app.name"      value="Atlanta-Traffic-Analysis"/>
+  <property name="app.path"      value="/${app.name}"/>
+  <property name="app.version"   value="0.1-dev"/>
+  <property name="build.home"    value="${basedir}/target"/>
+  <property name="catalina.home" value="${env.CATALINA_HOME}"/>
+  <property name="src.main"      value="${basedir}/src/main/"/>
+  <property name="src.test"      value="${basedir}/src/test/"/>
+  <property name="dir.reports"   value="${basedir}/target/reports/"/>
+  <property name="web.home"      value="${basedir}/web"/>
+
+  <target name="clean"
+   description="Delete old build and dist directories">
+    <delete dir="${build.home}"/>
+  </target>
+
+  <target name="prepare">
+    <copy  todir="${build.home}">
+      <fileset dir="${src.main}/webapp"/>
+    </copy>    
+  </target>
+
+  <target name="deploy" depends="prepare">
+    <mkdir dir="${catalina.home}/webapps/${app.name}"/>
+    
+    <copy  todir="${catalina.home}/webapps/${app.name}">
+      <fileset dir="${build.home}"/>
+    </copy>    
+  </target>
+	
+  <target name="tomcat">
+      <exec dir="${env.CATALINA_HOME}/bin" executable="startup.bat"/>
+  </target>
+  <target name="tomcat_stop">
+      <exec dir="${env.CATALINA_HOME}/bin" executable="shutdown.bat"/>
+   </target>
+</project>

@@ -1,0 +1,157 @@
+* { margin:0; padding:0; }
+
+body {
+    background: url("../images/atlanta.jpg") no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: contain;
+	height: 100%;
+    font-family: "berlin_sans_fb_demibold", Century Gothic, sans-serif;
+}
+
+/* map */
+#map {
+	height: 500px; 
+}
+
+/* form */
+#form {
+	display: block;
+    border-style:none;
+}
+
+#zone4Button {
+	background: url("../images/zone4.png") no-repeat center center fixed;
+	background-size: contain;
+	-webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+	height: 100%;
+	border-style: none;
+}
+
+.homepageForm {
+    height: 100%;
+}
+
+.loginForm {
+    width: 250px;
+    height: 250px;
+}
+
+.zone4Form {
+	width: 1600px;
+	height: 1200px;
+}
+
+.signUpForm {
+    width: 250px;
+    height: 700px;
+}
+
+.forgotPasswordForm {
+    width: 250px;
+    height: 200px;
+}
+input {
+    width: 80%;
+    height: 30px;
+    display: block;
+    margin: 10px auto;
+    font-size: 18px;
+    outline:none;
+}
+
+input:focus{
+    box-shadow: 0 0 5px rgb(0, 0, 0);
+}
+
+::-webkit-input-placeholder {
+    font-family: "berlin_sans_fb_demibold", Century Gothic, sans-serif;
+    font-size: 18px;
+    padding-left: 5px;
+    color: rgba(0, 0, 0, 0.29);
+}
+
+:-moz-placeholder { /* Firefox 18- */
+    font-family: "berlin_sans_fb_demibold", Century Gothic, sans-serif;
+    font-size: 18px;
+    padding-left: 5px;
+    color:  rgba(0, 0, 0, 0.29);
+}
+
+::-moz-placeholder {  /* Firefox 19+ */
+    font-family: "berlin_sans_fb_demibold", Century Gothic, sans-serif;
+    font-size: 18px;
+    padding-left: 5px;
+    color: rgba(0, 0, 0, 0.29);
+}
+
+:-ms-input-placeholder {
+    font-family: "berlin_sans_fb_demibold", Century Gothic, sans-serif;
+    font-size: 18px;
+    padding-left: 5px;
+    color: rgba(0, 0, 0, 0.29);
+}
+
+/* End of form */
+
+/* Login and SignUp text and buttons*/
+#SignUpText a {
+    font-size: 17px;
+    opacity: 1;
+}
+
+#LoginText a {
+    font-size: 17px;
+    opacity: 1;
+}
+
+#SignUpText a:link {
+    color: #331B3B;
+    text-decoration:none;
+}
+
+#LoginText a:link {
+    color: #331B3B;
+    text-decoration:none;
+}
+
+#LoginText:hover {
+    color: black;
+    text-decoration:none;
+}
+
+#SignUpText:hover {
+    color: black;
+    text-decoration:none;
+}
+
+#loginButton, #SignUpButton {
+    display: block;
+    margin: 20px auto;
+    width: 142px;
+    height: 48px;
+    border-style:none;
+    cursor: pointer;
+}
+
+#loginButton {
+    background: url("../images/login.png") no-repeat 0 0;
+}
+
+#SignUpButton {
+    background: url("../images/signup.png") no-repeat 0 0;
+}
+
+#SignUpButton:hover {
+    background-position: 0 -48px;
+}
+
+#loginButton:hover {
+    background-position: 0 -48px;
+}
+
+/* End of Login and SignUp text and buttons*/
+
