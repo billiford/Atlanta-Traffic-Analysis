@@ -10,7 +10,7 @@ apache tomcat
 
 # How to compile
 
-In console *cd* into ../Atlanta-Traffic-Analysis (where you cloned it and
+In console *cd* into ../Atlanta-Accident-Analysis (where you cloned it and
  the build.xml is), then:
  
 *ant clean deploy*
@@ -22,4 +22,4 @@ or simply
 # How to run
 
 Start up apache tomcat (startup.bat)
-Open your browser then go to localhost:8080/Atlanta-Traffic-Analysis/index.jsp
+Open your browser then go to localhost:8080/Atlanta-Accident-Analysis/index.jsp

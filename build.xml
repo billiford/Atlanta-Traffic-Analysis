@@ -1,7 +1,7 @@
 <project name="Atlanta-Traffic-Analysis" default="compile" basedir=".">
 
   <property environment="env"/>
-  <property name="app.name"      value="Atlanta-Traffic-Analysis"/>
+  <property name="app.name"      value="Atlanta-Accident-Analysis"/>
   <property name="app.path"      value="/${app.name}"/>
   <property name="app.version"   value="0.1-dev"/>
   <property name="build.home"    value="${basedir}/target"/>

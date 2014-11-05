@@ -4,7 +4,7 @@
 	<!-- TODOs: move css stuff to style.css and javascript stuff to a 
 		new javascript file. besides that, there's still a whole bunch
 		of stuff like d3 and getting our ideas to work correctly.--> 
-	<title>Leaflet Quick Start Guide Example</title>
+	<title>Atlanta Accident Analysis</title>
 	<meta charset="utf-8" />
 
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
