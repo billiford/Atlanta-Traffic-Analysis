@@ -1,11 +1,11 @@
 # CS 4460 Atlanta Traffic Analysis
 
-William Bolton, Teresa Hu, Joseph Johnson
-
 Things you'll need installed:
 
 git
+
 apache ant
+
 apache tomcat
 
 # How to compile
@@ -22,4 +22,5 @@ or simply
 # How to run
 
 Start up apache tomcat (startup.bat)
+
 Open your browser then go to localhost:8080/Atlanta-Accident-Analysis/index.jsp
