@@ -5,9 +5,15 @@
 		new javascript file. besides that, there's still a whole bunch
 		of stuff like d3 and getting our ideas to work correctly.--> 
 	<title>Atlanta Accident Analysis</title>
+	
 	<meta charset="utf-8" />
-
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	
+	<script src="JavaScript/leaflet.js"></script>
+	<script src="JavaScript/leaflet.markercluster-src.js"></script>
+	<script src="JavaScript/papaparse.min.js"></script>
+	<script src="JavaScript/jquery-2.1.1.js"></script>
+	<script src="JavaScript/TileLayer.Grayscale.js"></script>
 
 	<link rel="stylesheet" href="stylesheets/leaflet.css" />
 	<link rel="stylesheet" href="stylesheets/MarkerCluster.css" />
@@ -55,7 +61,7 @@
 			opacity: 0.6;
 			width: 350px;
 			height: 600px;
-			top: 100px;
+			top: 20px;
 			left: 20px;
 			z-index: 1001;
 		}
@@ -78,13 +84,13 @@
 			background-color: clear;
 			width: 300px;
 			height: 70px;
-			top: 120px;
+			top: 40px;
 			left: 40px;
 			z-index: 1002;
 		}
 		
 		#SpringButton {
-			opacity: .8;
+			opacity: .9;
 			background: url("images/spring.png") no-repeat 0 0;
 			background-size: 70px 70px;
 			display: block;
@@ -96,12 +102,12 @@
 		}
 		
 		#SummerButton {
-			opacity: .8;
+			opacity: .9;
 			background: url("images/summer.png") no-repeat 0 0;
 			background-size: 70px 70px;
 			display: block;
 			margin-left: 80px;
-			margin-top: -72px;
+			margin-top: -70px;
 			height: 70px;
 			width: 70px;
 			border-style:none;
@@ -110,12 +116,12 @@
 		}
 		
 		#FallButton {
-			opacity: .8;
+			opacity: .9;
 			background: url("images/fall.png") no-repeat 0 0;
 			background-size: 70px 70px;
 			display: block;
 			margin-left: 160px;
-			margin-top: -72px;
+			margin-top: -70px;
 			height: 70px;
 			width: 70px;
 			border-style:none;
@@ -124,33 +130,17 @@
 		}
 		
 		#WinterButton {
-			opacity: .8;
+			opacity: .9;
 			background: url("images/winter.png") no-repeat 0 0;
 			background-size: 70px 70px;
 			display: block;
 			margin-left: 240px;
-			margin-top: -72px;
+			margin-top: -70px;
 			height: 70px;
 			width: 70px;
 			border-style:none;
 			cursor: pointer;
 			z-index: 10000;
-		}
-		
-		#WinterButton:hover, #SummerButton:hover, #SpringButton:hover, #FallButton:hover {
-			opacity: 1;
-		}
-		
-		.darken:before {
-			background: black;
-			content: "";
-			opacity: 0.4;
-			position: absolute;
-			top: 0;
-			left: 0;
-			width: 100%;
-			height: 100%;
-			z-index: 2;
 		}
 
     </style>
@@ -162,34 +152,26 @@
 	<div id="map"></div>
 	<div id="seasons">
 	    <form>
-			<input id="SpringButton"/>
-			<input id="SummerButton"/>
-			<input id="FallButton"/>
-			<input id="WinterButton"/>
+			<input type="button" id="SpringButton" class="season">
+			<input type="button" id="SummerButton" class="season">
+			<input type="button" id="FallButton" class="season">
+			<input type="button" id="WinterButton" class="season">
 		</form>
 	</div>
-	
-	<script src="JavaScript/leaflet.js"></script>
-	<script src="JavaScript/leaflet.markercluster-src.js"></script>
-	<script src="JavaScript/papaparse.min.js"></script>
-	<script src="JavaScript/jquery-2.1.1.js"></script>
-	<script src="JavaScript/TileLayer.Grayscale.js"></script>
+
 	<script> 
-	    var map = L.map('map').setView([33.7488889, -84.3880556], 12);
+	    var map = L.map('map', {zoomControl: false} ).setView([33.7488889, -84.3880556], 12);
 		var progress = document.getElementById('progress');
 		var progressBar = document.getElementById('progress-bar');
-		
+			
 		L.tileLayer.grayscale('/CS4460-project/tiles/{z}/{x}/{y}.png', {
-			maxZoom: 13,
+			maxZoom: 14,
 			minZoom: 11,
 			attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
 				'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
 				'Imagery © <a href="http://mapbox.com">Mapbox</a>',
 			id: 'examples.map-i875mjb7'
 		}).addTo(map);
-
-		map.dragging.disable();
-
 		
 		function updateProgressBar(processed, total, elapsed, layersArray) {
 			if (elapsed > 1000) {
@@ -204,7 +186,7 @@
 		}
 		
 		function doStuff(data) {
-			var markers = L.markerClusterGroup({ chunkinterval: 500, chunkdelay: 25, chunkedLoading: true, chunkProgress: updateProgressBar, showCoverageOnHover: false, zoomToBoundsOnClick: false, spiderfyOnMaxZoom: false });
+			var markers = L.markerClusterGroup({ removeOutsideVisibleBounds: true, chunkinterval: 500, chunkdelay: 25, chunkedLoading: true, chunkProgress: updateProgressBar, showCoverageOnHover: false, zoomToBoundsOnClick: false, spiderfyOnMaxZoom: false });
 			for (var i = 0; i < data.length; i++) {
 				var marker = L.marker(new L.LatLng(data[i][0], data[i][1]));
 				markers.addLayer(marker);
@@ -247,16 +229,31 @@
 	</script>
 	
 	<script>
-		$(function() {
-		$("#SpringButton").click(function() {
-			if($(this).hasClass('darken')) {
-				$(this).removeClass('darken');
-			}
-			else {
-				$(this).addClass('darken');
-			}
-		});
-		});
+		$(document).ready(function(){
+			$('.season').click(
+			function() {
+				if ($(this).css("opacity") < 0.5) {
+					$(this).fadeTo(1, 1);
+				} else {
+					$(this).fadeTo(1, .4);
+				}
+			});
+			
+			$('.season').hover(
+			function() {
+				if ($(this).css("opacity") > 0.6) {
+					$(this).fadeTo(1, 1);
+				} else {
+					$(this).fadeTo(1, .4);
+				}
+			}, function() {
+				if ($(this).css("opacity") < 0.5) {
+					$(this).fadeTo(1, 0.3);
+				} else {
+					$(this).fadeTo(1, 0.9);
+				}
+			});
+		})
 	</script>
 </body>
 </html>
