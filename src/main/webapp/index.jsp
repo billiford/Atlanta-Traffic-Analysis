@@ -18,137 +18,39 @@
 	<link rel="stylesheet" href="stylesheets/leaflet.css" />
 	<link rel="stylesheet" href="stylesheets/MarkerCluster.css" />
 	<link rel="stylesheet" href="stylesheets/MarkerCluster.Default.css" />
-	
-	<style type="text/css">
-    	html, body {
-    		height: 100%;
-    		margin: 0;
-    	}
+	<link rel="stylesheet" href="stylesheets/style.css" />
+	<style> /* set the CSS */
 
-    	#map {
-    		min-height: 100%; 
-			cursor: auto;
-    	}
-		
-		#progress {
-			display: none;
-			position: absolute;
-			z-index: 1000;
-			left: 50%;
-			top: 50%;
-			width: 200px;
-			height: 20px;
-			margin-top: -20px;
-			margin-left: -100px;
-			background-color: #fff;
-			background-color: rgba(255, 255, 255, 0.7);
-			border-radius: 4px;
-			padding: 2px;
-		}
-		
-		#progress-bar {
-			width: 0;
-			height: 100%;
-			background-color: #ffff66;
-			border-radius: 4px;
-		}
-		
-		#settings-pane {
-			border: 2px solid #000000;
-			border-radius: 10px;
-			position: absolute;
-			background-color: black;
-			opacity: 0.6;
-			width: 350px;
-			height: 600px;
-			top: 20px;
-			left: 20px;
-			z-index: 1001;
-		}
-		
-		#d3-pane {
-			border: 2px solid #000000;
-			border-radius: 10px;
-			position: absolute;
-			background-color: black;
-			opacity: 0.6;
-			width: 400px;
-			top: 20px;
-			right: 20px;
-			bottom: 20px;
-			z-index: 1001;
-		}
-		
-		#seasons {
-			position: absolute;
-			background-color: clear;
-			width: 300px;
-			height: 70px;
-			top: 40px;
-			left: 40px;
-			z-index: 1002;
-		}
-		
-		#SpringButton {
-			opacity: .9;
-			background: url("images/spring.png") no-repeat 0 0;
-			background-size: 70px 70px;
-			display: block;
-			height: 70px;
-			width: 70px;
-			border-style:none;
-			cursor: pointer;
-			z-index: 10000;
-		}
-		
-		#SummerButton {
-			opacity: .9;
-			background: url("images/summer.png") no-repeat 0 0;
-			background-size: 70px 70px;
-			display: block;
-			margin-left: 80px;
-			margin-top: -70px;
-			height: 70px;
-			width: 70px;
-			border-style:none;
-			cursor: pointer;
-			z-index: 10000;
-		}
-		
-		#FallButton {
-			opacity: .9;
-			background: url("images/fall.png") no-repeat 0 0;
-			background-size: 70px 70px;
-			display: block;
-			margin-left: 160px;
-			margin-top: -70px;
-			height: 70px;
-			width: 70px;
-			border-style:none;
-			cursor: pointer;
-			z-index: 10000;
-		}
-		
-		#WinterButton {
-			opacity: .9;
-			background: url("images/winter.png") no-repeat 0 0;
-			background-size: 70px 70px;
-			display: block;
-			margin-left: 240px;
-			margin-top: -70px;
-			height: 70px;
-			width: 70px;
-			border-style:none;
-			cursor: pointer;
-			z-index: 10000;
+		body { font: 12px Arial; }
+
+		path { 
+			stroke: steelblue;
+			stroke-width: 2;
+			fill: none;
 		}
 
-    </style>
+		.axis path,
+		.axis line {
+			fill: none;
+			stroke: yellow;
+			stroke-width: 2;
+			shape-rendering: crispEdges;
+		}
+		
+		.axis text {
+			fill: yellow;
+		}
+
+	</style>
+
 </head>
 <body>
 	<div id="progress"><div id="progress-bar"></div></div>
-	<div id="settings-pane"></div>
-	<div id="d3-pane"></div>
+	<div id="settings-pane">
+		<input type="checkbox" name="accidents" id="accidents" class="css-checkbox" />
+		<label for="accidents" class="css-label">Option 1</label>
+	</div>
+	<div id="d3-pane" class="d3-pane"></div>
 	<div id="map"></div>
 	<div id="seasons">
 	    <form>
@@ -160,10 +62,14 @@
 	</div>
 
 	<script> 
-	    var map = L.map('map', {zoomControl: false} ).setView([33.7488889, -84.3880556], 12);
+		var southWest = L.latLng(33.55064, -84.85318),
+			northEast = L.latLng(34.1878, -84.00668),
+			bounds = L.latLngBounds(southWest, northEast);
+		
+	    var map = L.map('map', {zoomControl: false, maxBounds: bounds} ).setView([33.7488889, -84.3880556], 12);
 		var progress = document.getElementById('progress');
 		var progressBar = document.getElementById('progress-bar');
-			
+		
 		L.tileLayer.grayscale('/CS4460-project/tiles/{z}/{x}/{y}.png', {
 			maxZoom: 14,
 			minZoom: 11,
@@ -205,7 +111,7 @@
 			});
 		}
 		
-		parseData('/CS4460-project/csv/data_lat_long.csv', doStuff);
+		parseData('/Atlanta-Accident-Analysis/csv/data_lat_long.csv', doStuff);
 
 
 		/*L.polygon([
@@ -255,5 +161,93 @@
 			});
 		})
 	</script>
+
+
+<!-- load the d3.js library -->    
+<script src="http://d3js.org/d3.v3.min.js"></script>
+
+<script>
+
+	// Set the dimensions of the canvas / graph
+	var margin = {top: 30, right: 20, bottom: 30, left: 50},
+		width = 400 - margin.left - margin.right,
+		height = 270 - margin.top - margin.bottom;
+
+	// Parse the date / time
+	var parseDate = d3.time.format("%m/%d/%Y").parse; 
+
+	// Set the ranges
+	var x = d3.time.scale().range([0, width]);
+	var y = d3.scale.linear().range([height, 0]);
+
+	// Define the axes
+	var xAxis = d3.svg.axis().scale(x)
+		.orient("bottom").ticks(4);
+
+	var yAxis = d3.svg.axis().scale(y)
+		.orient("left").ticks(5);
+
+	// Define the line
+	var priceline = d3.svg.line()
+		.x(function(d) { return x(d.date); })
+		.y(function(d) { return y(d.total); });
+		
+	// Adds the svg canvas
+	var svg = d3.select(".d3-pane")
+		.append("svg")
+			.attr("width", width + margin.left + margin.right)
+			.attr("height", height + margin.top + margin.bottom)
+		.append("g")
+			.attr("transform", 
+				  "translate(" + margin.left + "," + margin.top + ")");
+
+	// Get the data
+		d3.csv("/Atlanta-Accident-Analysis/csv/accident_totals.csv", function(error, data) {
+			data.forEach(function(d) {
+			    d.date = parseDate(d.date);
+			    d.total = +d.total;
+		});
+
+		// Scale the range of the data
+		x.domain(d3.extent(data, function(d) { return d.date; }));
+		y.domain([0, d3.max(data, function(d) { return d.total; })]); 
+
+		// Nest the entries by symbol
+		var dataNest = d3.nest()
+			.key(function(d) {return d.season;})
+			.entries(data);
+			
+		/*var text = svg.selectAll("text")
+                          .data(priceline)
+                          .enter()
+                          .append("text");
+	
+		var textLabels = text
+                   .attr("font-family", "sans-serif")
+                   .attr("font-size", "20px")
+                   .attr("fill", "red");*/
+
+		// Loop through each symbol / key
+		dataNest.forEach(function(d) {
+			svg.append("path")
+				.attr("class", "line")
+				.attr("d", priceline(d.values)); 
+
+		});
+
+		// Add the X Axis
+		svg.append("g")
+			.attr("class", "x axis")
+			.attr("transform", "translate(0," + height + ")")
+			.call(xAxis);
+
+		// Add the Y Axis
+		svg.append("g")
+			.attr("class", "y axis")
+			.call(yAxis);
+
+	});
+
+</script>
 </body>
 </html>
