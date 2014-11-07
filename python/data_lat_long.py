@@ -1,10 +1,10 @@
 #########################################
-#										#
-#	This class used to parse data.csv	#
-#	and output just the latitude and	#
-#	longitude comma separated values	#
-#	in correct format without a header	#
-#										#
+										
+#	This class used to parse data.csv	
+#	and output just the latitude and	
+#	longitude comma separated values	
+#	in correct format without a header	
+#										
 #########################################
 
 import csv
