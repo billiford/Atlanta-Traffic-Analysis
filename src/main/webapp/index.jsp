@@ -55,8 +55,8 @@
 		var progress = document.getElementById('progress');
 		var progressBar = document.getElementById('progress-bar');
 		
-		L.tileLayer.grayscale('/CS4460-project/tiles/{z}/{x}/{y}.png', {
-			maxZoom: 14,
+		L.tileLayer('http://a.www.toolserver.org/tiles/bw-mapnik/{z}/{x}/{y}.png', {
+			maxZoom: 23,
 			minZoom: 11,
 			attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
 				'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
