@@ -1,9 +1,17 @@
-input[type=checkbox].css-checkbox {
-	position:absolute; z-index:-1000; left:-1000px; overflow: hidden; clip: rect(0 0 0 0); height:100px; width:100px; margin:-1px; padding:0; border:0;
+.css-checkbox {
+	position:absolute; 
+	z-index:-1000; 
+	left:-1000px; 
+	overflow: hidden; 
+	clip: rect(0 0 0 0); 
+	height:100px; 
+	width:100px; 
+	margin:-1px; 
+	padding:0; 
+	border:0;
 }
 
-input[type=checkbox].css-checkbox + label.css-label {
-	padding-left:25px;
+.css-label {
 	height:20px; 
 	display:inline-block;
 	line-height:20px;
@@ -12,14 +20,18 @@ input[type=checkbox].css-checkbox + label.css-label {
 	font-size:20px;
 	vertical-align:middle;
 	cursor:pointer;
-
+	padding-right: 10px;
+    font-weight: bold;
+    float: left;
 }
 
 input[type=checkbox].css-checkbox:checked + label.css-label {
 	background-position: 0 -20px;
 }
+
 label.css-label {
 	background-image:url(http://csscheckbox.com/checkboxes/u/csscheckbox_556c71454f6569bef1b53ac2100c534d.png);
+	font-weight: bold;
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;
 	-khtml-user-select: none;
@@ -65,11 +77,10 @@ html, body {
 	border: 2px solid #000000;
 	border-radius: 10px;
 	position: absolute;
-	background-color: black;
-	opacity: 0.6;
+	background-color: rgba(0, 0, 0, .6);
 	width: 350px;
 	height: 600px;
-	top: 20px;
+	bottom: 20px;
 	left: 20px;
 	z-index: 1001;
 }
@@ -78,8 +89,7 @@ html, body {
 	border: 2px solid #000000;
 	border-radius: 10px;
 	position: absolute;
-	background-color: black;
-	opacity: 0.6;
+	background-color: rgba(0, 0, 0, .6);
 	width: 400px;
 	top: 20px;
 	right: 20px;
@@ -88,13 +98,29 @@ html, body {
 	color: red;
 }
 
+#checkboxes {
+	position: absolute;
+	top: 150px;
+	left: 200px;
+}
+
 #seasons {
 	position: absolute;
 	background-color: clear;
 	width: 300px;
 	height: 70px;
-	top: 40px;
-	left: 40px;
+	top: 20px;
+	left: 20px;
+	z-index: 1002;
+}
+
+#timeOfDay {
+	position: absolute;
+	background-color: clear;
+	width: 300px;
+	height: 70px;
+	top: 100px;
+	left: 20px;
 	z-index: 1002;
 }
 
@@ -150,5 +176,54 @@ html, body {
 	border-style:none;
 	cursor: pointer;
 	z-index: 10000;
+}
+
+#DaytimeButton {
+	opacity: .9;
+	background: url("../images/daytime.png") no-repeat 0 0;
+	background-size: 70px 70px;
+	display: block;
+	margin-left: 80px;
+	margin-top: 0px;
+	height: 70px;
+	width: 70px;
+	border-style:none;
+	cursor: pointer;
+	z-index: 10000;
+}
+
+#NighttimeButton {
+	opacity: .9;
+	background: url("../images/nighttime.png") no-repeat 0 0;
+	background-size: 70px 70px;
+	display: block;
+	margin-left: 160px;
+	margin-top: -70px;
+	height: 70px;
+	width: 70px;
+	border-style:none;
+	cursor: pointer;
+	z-index: 10000;
+}
+
+
+body { font: 12px Arial; }
+
+path { 
+	stroke: steelblue;
+	stroke-width: 2;
+	fill: none;
+}
+
+.axis path,
+.axis line {
+	fill: none;
+	stroke: yellow;
+	stroke-width: 2;
+	shape-rendering: auto;
+}
+
+.axis text {
+	fill: yellow;
 }
 			

@@ -19,54 +19,39 @@
 	<link rel="stylesheet" href="stylesheets/MarkerCluster.css" />
 	<link rel="stylesheet" href="stylesheets/MarkerCluster.Default.css" />
 	<link rel="stylesheet" href="stylesheets/style.css" />
-	<style> /* set the CSS */
-
-		body { font: 12px Arial; }
-
-		path { 
-			stroke: steelblue;
-			stroke-width: 2;
-			fill: none;
-		}
-
-		.axis path,
-		.axis line {
-			fill: none;
-			stroke: yellow;
-			stroke-width: 2;
-			shape-rendering: crispEdges;
-		}
-		
-		.axis text {
-			fill: yellow;
-		}
-
-	</style>
 
 </head>
 <body>
 	<div id="progress"><div id="progress-bar"></div></div>
 	<div id="settings-pane">
-		<input type="checkbox" name="accidents" id="accidents" class="css-checkbox" />
-		<label for="accidents" class="css-label">Option 1</label>
+		<div id="seasons">
+			<form>
+				<input type="button" id="SpringButton" class="season">
+				<input type="button" id="SummerButton" class="season">
+				<input type="button" id="FallButton" class="season">
+				<input type="button" id="WinterButton" class="season">
+			</form>
+		</div>
+		<div id="timeOfDay">
+			<form>
+				<input type="button" id="DaytimeButton" class="season">
+				<input type="button" id="NighttimeButton" class="season">
+			</form>
+		</div>
+		<div id="checkboxes">
+			<!-- <input type="checkbox" name="accidents" id="accidentsCheckbox" class="css-checkbox" />
+			<label for="accidentsCheckbox" class="css-label">Option 1</label> -->
+		</div>
 	</div>
 	<div id="d3-pane" class="d3-pane"></div>
 	<div id="map"></div>
-	<div id="seasons">
-	    <form>
-			<input type="button" id="SpringButton" class="season">
-			<input type="button" id="SummerButton" class="season">
-			<input type="button" id="FallButton" class="season">
-			<input type="button" id="WinterButton" class="season">
-		</form>
-	</div>
 
 	<script> 
 		var southWest = L.latLng(33.55064, -84.85318),
 			northEast = L.latLng(34.1878, -84.00668),
 			bounds = L.latLngBounds(southWest, northEast);
 		
-	    var map = L.map('map', {zoomControl: false, maxBounds: bounds} ).setView([33.7488889, -84.3880556], 12);
+	    var map = L.map('map', {maxBounds: bounds} ).setView([33.7488889, -84.3880556], 12);
 		var progress = document.getElementById('progress');
 		var progressBar = document.getElementById('progress-bar');
 		
@@ -138,27 +123,29 @@
 		$(document).ready(function(){
 			$('.season').click(
 			function() {
-				if ($(this).css("opacity") < 0.5) {
-					$(this).fadeTo(1, 1);
-				} else {
-					$(this).fadeTo(1, .4);
-				}
-			});
+				if ($(this).css("opacity") < 0.5) { $(this).fadeTo(1, 1);
+				} else { $(this).fadeTo(1, .4); } });
 			
 			$('.season').hover(
 			function() {
-				if ($(this).css("opacity") > 0.6) {
-					$(this).fadeTo(1, 1);
-				} else {
-					$(this).fadeTo(1, .4);
-				}
+				if ($(this).css("opacity") > 0.6) { $(this).fadeTo(1, 1);
+				} else { $(this).fadeTo(1, .4); }
 			}, function() {
-				if ($(this).css("opacity") < 0.5) {
-					$(this).fadeTo(1, 0.3);
-				} else {
-					$(this).fadeTo(1, 0.9);
-				}
-			});
+				if ($(this).css("opacity") < 0.5) { $(this).fadeTo(1, 0.3);
+				} else { $(this).fadeTo(1, 0.9); } });
+				
+			$('.timeOfDay').click(
+			function() {
+				if ($(this).css("opacity") < 0.5) { $(this).fadeTo(1, 1);
+				} else { $(this).fadeTo(1, .4); } });
+			
+			$('.timeOfDay').hover(
+			function() {
+				if ($(this).css("opacity") > 0.6) { $(this).fadeTo(1, 1);
+				} else { $(this).fadeTo(1, .4); }
+			}, function() {
+				if ($(this).css("opacity") < 0.5) { $(this).fadeTo(1, 0.3);
+				} else { $(this).fadeTo(1, 0.9); } });
 		})
 	</script>
 
@@ -188,7 +175,7 @@
 		.orient("left").ticks(5);
 
 	// Define the line
-	var priceline = d3.svg.line()
+	var line = d3.svg.line()
 		.x(function(d) { return x(d.date); })
 		.y(function(d) { return y(d.total); });
 		
@@ -202,51 +189,33 @@
 				  "translate(" + margin.left + "," + margin.top + ")");
 
 	// Get the data
-		d3.csv("/Atlanta-Accident-Analysis/csv/accident_totals.csv", function(error, data) {
-			data.forEach(function(d) {
-			    d.date = parseDate(d.date);
-			    d.total = +d.total;
-		});
-
-		// Scale the range of the data
-		x.domain(d3.extent(data, function(d) { return d.date; }));
-		y.domain([0, d3.max(data, function(d) { return d.total; })]); 
-
-		// Nest the entries by symbol
-		var dataNest = d3.nest()
-			.key(function(d) {return d.season;})
-			.entries(data);
-			
-		/*var text = svg.selectAll("text")
-                          .data(priceline)
-                          .enter()
-                          .append("text");
-	
-		var textLabels = text
-                   .attr("font-family", "sans-serif")
-                   .attr("font-size", "20px")
-                   .attr("fill", "red");*/
-
-		// Loop through each symbol / key
-		dataNest.forEach(function(d) {
-			svg.append("path")
-				.attr("class", "line")
-				.attr("d", priceline(d.values)); 
-
-		});
-
-		// Add the X Axis
-		svg.append("g")
-			.attr("class", "x axis")
-			.attr("transform", "translate(0," + height + ")")
-			.call(xAxis);
-
-		// Add the Y Axis
-		svg.append("g")
-			.attr("class", "y axis")
-			.call(yAxis);
-
+	d3.csv("/Atlanta-Accident-Analysis/csv/accident_totals_by_week.csv", function(error, data) {
+		data.forEach(function(d) {
+			d.date = parseDate(d.date);
+			d.total = +d.total;
 	});
+
+	// Scale the range of the data
+	x.domain(d3.extent(data, function(d) { return d.date; }));
+	y.domain([350, d3.max(data, function(d) { return d.total; })]); 
+
+	// Add the X Axis
+	svg.append("g")
+		.attr("class", "x axis")
+		.attr("transform", "translate(0," + height + ")")
+		.call(xAxis);
+
+	// Add the Y Axis
+	svg.append("g")
+		.attr("class", "y axis")
+		.call(yAxis);
+	
+	svg.append("path")
+      .datum(data)
+      .attr("class", "line")
+      .attr("d", line);
+
+});
 
 </script>
 </body>
