@@ -9,7 +9,7 @@
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	
-	<script src="JavaScript/leaflet.js"></script>
+	<script src="http://cdn.leafletjs.com/leaflet-0.7/leaflet.js"></script>
 	<script src="JavaScript/leaflet.markercluster-src.js"></script>
 	<script src="JavaScript/papaparse.min.js"></script>
 	<script src="JavaScript/jquery-2.1.1.js"></script>
@@ -43,7 +43,10 @@
 			<label for="accidentsCheckbox" class="css-label">Option 1</label> -->
 		</div>
 	</div>
-	<div id="d3-pane" class="d3-pane"></div>
+	<div id="d3-pane" class="d3-pane">
+		<div id="accidentsByWeek" class="accidentsByWeek"></div>
+		<div id="accidentsByZone" class="accidentsByZone"></div>
+	</div>
 	<div id="map"></div>
 
 	<script> 
@@ -55,14 +58,16 @@
 		var progress = document.getElementById('progress');
 		var progressBar = document.getElementById('progress-bar');
 		
-		L.tileLayer('http://a.www.toolserver.org/tiles/bw-mapnik/{z}/{x}/{y}.png', {
-			maxZoom: 23,
+		L.tileLayer('http://b.www.toolserver.org/tiles/bw-mapnik/{z}/{x}/{y}.png', {
+			maxZoom: 19,
 			minZoom: 11,
 			attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
 				'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
 				'Imagery © <a href="http://mapbox.com">Mapbox</a>',
 			id: 'examples.map-i875mjb7'
 		}).addTo(map);
+		
+		map.invalidateSize();
 		
 		function updateProgressBar(processed, total, elapsed, layersArray) {
 			if (elapsed > 1000) {
@@ -77,7 +82,13 @@
 		}
 		
 		function doStuff(data) {
-			var markers = L.markerClusterGroup({ removeOutsideVisibleBounds: true, chunkinterval: 500, chunkdelay: 25, chunkedLoading: true, chunkProgress: updateProgressBar, showCoverageOnHover: false, zoomToBoundsOnClick: false, spiderfyOnMaxZoom: false });
+			var markers = L.markerClusterGroup({ spiderfyOnMaxZoom: false, 
+												chunkinterval: 1000, 
+												chunkdelay: 25, 
+												chunkedLoading: true, 
+												chunkProgress: updateProgressBar, 
+												showCoverageOnHover: false, 
+												disableClusteringAtZoom: 19 });
 			for (var i = 0; i < data.length; i++) {
 				var marker = L.marker(new L.LatLng(data[i][0], data[i][1]));
 				markers.addLayer(marker);
@@ -156,7 +167,7 @@
 <script>
 
 	// Set the dimensions of the canvas / graph
-	var margin = {top: 30, right: 20, bottom: 30, left: 50},
+	var margin = {top: 30, right: 20, bottom: 30, left: 60},
 		width = 400 - margin.left - margin.right,
 		height = 270 - margin.top - margin.bottom;
 
@@ -164,23 +175,23 @@
 	var parseDate = d3.time.format("%m/%d/%Y").parse; 
 
 	// Set the ranges
-	var x = d3.time.scale().range([0, width]);
-	var y = d3.scale.linear().range([height, 0]);
+	var weekX = d3.time.scale().range([0, width]);
+	var weekY = d3.scale.linear().range([height, 0]);
 
 	// Define the axes
-	var xAxis = d3.svg.axis().scale(x)
+	var weekXAxis = d3.svg.axis().scale(weekX)
 		.orient("bottom").ticks(4);
 
-	var yAxis = d3.svg.axis().scale(y)
+	var weekYAxis = d3.svg.axis().scale(weekY)
 		.orient("left").ticks(5);
 
 	// Define the line
 	var line = d3.svg.line()
-		.x(function(d) { return x(d.date); })
-		.y(function(d) { return y(d.total); });
+		.x(function(d) { return weekX(d.date); })
+		.y(function(d) { return weekY(d.total); });
 		
 	// Adds the svg canvas
-	var svg = d3.select(".d3-pane")
+	var svg2 = d3.select("#accidentsByWeek")
 		.append("svg")
 			.attr("width", width + margin.left + margin.right)
 			.attr("height", height + margin.top + margin.bottom)
@@ -196,21 +207,34 @@
 	});
 
 	// Scale the range of the data
-	x.domain(d3.extent(data, function(d) { return d.date; }));
-	y.domain([350, d3.max(data, function(d) { return d.total; })]); 
+	weekX.domain(d3.extent(data, function(d) { return d.date; }));
+	weekY.domain([350, d3.max(data, function(d) { return d.total; })]); 
 
 	// Add the X Axis
-	svg.append("g")
+	svg2.append("g")
 		.attr("class", "x axis")
 		.attr("transform", "translate(0," + height + ")")
-		.call(xAxis);
+		.call(weekXAxis)
+		.append("text")
+		.attr("dy", "2.11em")
+		.attr("dx", "11.0em")
+		.style("text-anchor", "end")
+		.text("Month");
 
 	// Add the Y Axis
-	svg.append("g")
+	svg2.append("g")
 		.attr("class", "y axis")
-		.call(yAxis);
+		.call(weekYAxis)
+		.append("text")
+		.attr("transform", "rotate(-90)")
+		.attr("y", -55)
+		.attr("dy", ".81em")
+		.attr("dx", "-4.5em")
+		.style("text-anchor", "end")
+		.text("Accidents");
+
 	
-	svg.append("path")
+	svg2.append("path")
       .datum(data)
       .attr("class", "line")
       .attr("d", line);
@@ -218,5 +242,72 @@
 });
 
 </script>
+
+<script>
+
+	var margin = {top: 20, right: 20, bottom: 70, left: 50},
+		width = 400 - margin.left - margin.right,
+		height = 300 - margin.top - margin.bottom;
+
+	var x = d3.scale.ordinal().rangeRoundBands([0, width], .1);
+
+	var y = d3.scale.linear().range([height, 0]);
+
+	var xAxis = d3.svg.axis()
+		.scale(x)
+		.orient("bottom")
+		.ticks(6);
+
+	var yAxis = d3.svg.axis()
+		.scale(y)
+		.orient("left")
+		.ticks(5);
+
+	var svg = d3.select("#accidentsByZone").append("svg")
+		.attr("width", width + margin.left + margin.right)
+		.attr("height", height + margin.top + margin.bottom)
+	  .append("g")
+		.attr("transform", 
+			  "translate(" + margin.left + "," + margin.top + ")");
+
+	d3.csv("/Atlanta-Accident-Analysis/csv/accident_totals_by_zone.csv", function(error, data) {
+
+		data.forEach(function(d) {
+			d.zone = +d.zone;
+			d.total = +d.total;
+		});
+	 
+	  x.domain(data.map(function(d) { return d.zone; }));
+	  y.domain([0, d3.max(data, function(d) { return d.total; })]);
+
+	  svg.append("g")
+		  .attr("class", "x axis")
+		  .attr("transform", "translate(0," + height + ")")
+		  .call(xAxis)
+		.selectAll("text")
+		  .style("text-anchor", "end")
+		  .attr("dx", ".4em");
+
+	  svg.append("g")
+		  .attr("class", "y axis")
+		  .call(yAxis)
+		.append("text")
+		  .attr("y", 6)
+		  .attr("dy", ".71em")
+		  .style("text-anchor", "end");
+
+	  svg.selectAll("bar")
+		  .data(data)
+		.enter().append("rect")
+		  .style("fill", "steelblue")
+		  .attr("x", function(d) { return x(d.zone); })
+		  .attr("width", x.rangeBand())
+		  .attr("y", function(d) { return y(d.total); })
+		  .attr("height", function(d) { return height - y(d.total); });
+
+	});
+
+</script>
+
 </body>
 </html>

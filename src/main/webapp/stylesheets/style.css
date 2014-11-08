@@ -98,6 +98,18 @@ html, body {
 	color: red;
 }
 
+#accidentsByZone {
+	position: absolute;
+	width: 400px;
+	top: 300px;
+}
+
+#accidentsByWeek {
+	position: absolute;
+	width: 400px;
+	top: 20px;
+}
+
 #checkboxes {
 	position: absolute;
 	top: 150px;
@@ -207,7 +219,7 @@ html, body {
 }
 
 
-body { font: 12px Arial; }
+body { font: 16px Arial; }
 
 path { 
 	stroke: steelblue;
