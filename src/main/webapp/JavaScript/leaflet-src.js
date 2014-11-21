@@ -4,6 +4,7 @@
  (c) 2010-2011, CloudMade
 */
 (function (window, document, undefined) {
+
 var oldL = window.L,
     L = {};
 
@@ -3421,11 +3422,11 @@ L.icon = function (options) {
 L.Icon.Default = L.Icon.extend({
 
 	options: {
-		iconSize: [25, 41],
+		iconSize: [20, 20],
 		iconAnchor: [12, 41],
 		popupAnchor: [1, -34],
 
-		shadowSize: [41, 41]
+		shadowSize: [1, 1]
 	},
 
 	_getIconUrl: function (name) {
