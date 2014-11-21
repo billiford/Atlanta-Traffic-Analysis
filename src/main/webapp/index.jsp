@@ -24,7 +24,7 @@
 
 </head>
 <body>
-	<div id="progress"><div id="progress-bar"></div></div>
+	<div id="loading" class="loading"></div>
 	<div id="settings-pane">
 		<div id="seasons">
 			<form>
@@ -51,6 +51,7 @@
 	</div>
 	<div id="map"></div>
 
+
 	<script> 
 
 		var southWest = L.latLng(33.55064, -84.85318),
@@ -58,15 +59,14 @@
 			bounds = L.latLngBounds(southWest, northEast);
 		
 	    var map = L.map('map', {maxBounds: bounds} ).setView([33.7688889, -84.3680556], 12);
-		var progress = document.getElementById('progress');
-		var progressBar = document.getElementById('progress-bar');
+		var loading = document.getElementById('loading');
 		
 		function tileLayer() {
 			L.tileLayer('http://a.tile.stamen.com/toner/{z}/{x}/{y}.png', {
 				maxZoom: 19,
 				minZoom: 12,
-				unloadInvisibleTiles: false,
-				updateWhenIdle: true,
+				unloadInvisibleTiles: true,
+				updateWhenIdle: false,
 				attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
 					'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
 					'Imagery © <a href="http://mapbox.com">Mapbox</a>',
@@ -88,27 +88,98 @@
 
 			parseData('/Atlanta-Accident-Analysis/csv/data_lat_long.csv', doStuff);
 
+			var colors = {
+				'pink': '#E1499A',
+				'yellow': '#f0f000',
+				'green': '#47e495'
+			};
+
+			var color2 = colors.yellow;
+
+			var radius = 100;
+			var border = 5;
+			var padding = 30;
+			var startPercent = 0;
+			var endPercent = 0.0;
+
+			var twoPi = Math.PI * 2;
+			var formatPercent = d3.format('.0%');
+			var boxSize = (radius + padding) * 2;
+
+			var arc = d3.svg.arc()
+				.startAngle(0)
+				.innerRadius(radius)
+				.outerRadius(radius - border);
+
+			var parent = d3.select('#loading');
+
+			var svg3 = parent.append('svg')
+				.attr('width', boxSize)
+				.attr('height', boxSize);
+
+			var defs = svg3.append('defs');
+
+			var filter = defs.append('filter')
+				.attr('id', 'blur');
+
+			filter.append('feGaussianBlur')
+				.attr('in', 'SourceGraphic')
+				.attr('stdDeviation', '7');
+
+			var g3 = svg3.append('g')
+				.attr('transform', 'translate(' + boxSize / 2 + ',' + boxSize / 2 + ')');
+
+			var meter = g3.append('g')
+				.attr('class', 'progress-meter');
+
+			meter.append('path')
+				.attr('class', 'background')
+				.attr('fill', '#ccc')
+				.attr('fill-opacity', 0.5)
+				.attr('d', arc.endAngle(twoPi));
+
+			var foreground = meter.append('path')
+				.attr('class', 'foreground')
+				.attr('fill', color2)
+				.attr('fill-opacity', 1)
+				.attr('stroke', color2)
+				.attr('stroke-width', 3)
+				.attr('stroke-opacity', 1);
+
+			var front = meter.append('path')
+				.attr('class', 'foreground')
+				.attr('fill', color2)
+				.attr('fill-opacity', 1);
+
+			var numberText = meter.append('text')
+				.attr('fill', '#000')
+				.attr('text-anchor', 'middle')
+				.attr('font-size', '20px')
+				.attr('dy', '.35em');
+
 			function updateProgressBar(processed, total, elapsed, layersArray) {
-				if (elapsed > 1000) {
-					// if it takes more than a second to load, display the progress bar:
-					progress.style.display = 'block';
-					progressBar.style.width = Math.round(processed/total*100) + '%';
+				if (processed < total && elapsed > 100) {
+					foreground.attr('d', arc.endAngle(twoPi * processed / 32655));
+					front.attr('d', arc.endAngle(twoPi * processed / 32655));
+					numberText.text(formatPercent(processed / 32655));
 				}
 				if (processed === total) {
-					// all markers processed - hide the progress bar:
-					progress.style.display = 'none';
+					foreground.attr('d', arc.endAngle(twoPi * processed / 32655));
+					front.attr('d', arc.endAngle(twoPi * processed / 32655));
+					numberText.text(formatPercent(processed / 32655));
+					$("#loading").fadeOut();
 				}
 			}
-			
+
 			function doStuff(data) {
 				var markers = L.markerClusterGroup({ spiderfyOnMaxZoom: false, 
 													chunkinterval: 300, 
 													chunkdelay: 25, 
 													chunkedLoading: true, 
 													chunkProgress: updateProgressBar, 
-													showCoverageOnHover: false,
+													showCoverageOnHover: true,
 													disableClusteringAtZoom: 19, 
-													maxClusterRadius: 100 });
+													maxClusterRadius: 200 });
 				for (var i = 0; i < data.length; i++) {
 					var marker = L.marker(new L.LatLng(data[i][0], data[i][1]));
 					markers.addLayer(marker);
@@ -217,6 +288,15 @@
 	weekX.domain(d3.extent(data, function(d) { return d.date; }));
 	weekY.domain([350, d3.max(data, function(d) { return d.total; })]); 
 
+	svg2.append("path")
+		.datum(data)
+		.attr("class", "line")
+		.attr("fill", "none")
+		.attr("stroke-width", 1.2)
+		.style("stroke", "yellow")
+		.style("stoke-opacity", 0.5)
+		.attr("d", line);
+	
 	// Add the X Axis
 	svg2.append("g")
 		.attr("class", "x axis")
@@ -226,6 +306,7 @@
 		.attr("dy", "2.11em")
 		.attr("dx", "11.0em")
 		.style("text-anchor", "end")
+		.style("stroke", "white")
 		.text("Month");
 
 	// Add the Y Axis
@@ -238,13 +319,8 @@
 		.attr("dy", ".81em")
 		.attr("dx", "-4.5em")
 		.style("text-anchor", "end")
+		.style("stroke", "white")
 		.text("Accidents");
-
-	
-	svg2.append("path")
-      .datum(data)
-      .attr("class", "line")
-      .attr("d", line);
 
 });
 
