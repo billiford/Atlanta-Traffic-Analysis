@@ -14,6 +14,7 @@
 	<script src="JavaScript/papaparse.min.js"></script>
 	<script src="JavaScript/jquery-2.1.1.js"></script>
 	<script src="JavaScript/TileLayer.Grayscale.js"></script>
+	<script src="JavaScript/leaflet-invert.js"></script>
 	<script src="http://d3js.org/d3.v3.min.js"></script>
 	<script src="JavaScript/multithread.js"></script>
 
@@ -51,6 +52,28 @@
 	</div>
 	<div id="map"></div>
 
+	<!-- .out 
+  %i Timelapse Clock
+  .in.in1
+    %i S
+    - (1..60).each do
+      .marker
+    .pointer.s
+  .in.in2
+    %i M
+    - (1..60).each do
+      .marker
+    .pointer.m
+  .in.in3
+    %i H
+    - (1..60).each do
+      .marker
+    .pointer.h
+  - (1..60).each do
+    .marker
+  /.pointer.s
+  .pointer.m
+  .pointer.h -->
 
 	<script> 
 
@@ -62,8 +85,8 @@
 		var loading = document.getElementById('loading');
 		
 		function tileLayer() {
-			L.tileLayer('http://a.tile.stamen.com/toner/{z}/{x}/{y}.png', {
-				maxZoom: 19,
+			L.tileLayer.invert('http://a.tile.stamen.com/toner/{z}/{x}/{y}.png', {
+				maxZoom: 20,
 				minZoom: 12,
 				unloadInvisibleTiles: true,
 				updateWhenIdle: false,
@@ -152,7 +175,7 @@
 				.attr('fill-opacity', 1);
 
 			var numberText = meter.append('text')
-				.attr('fill', '#000')
+				.attr('fill', '#fff')
 				.attr('text-anchor', 'middle')
 				.attr('font-size', '20px')
 				.attr('dy', '.35em');
@@ -178,7 +201,7 @@
 													chunkedLoading: true, 
 													chunkProgress: updateProgressBar, 
 													showCoverageOnHover: true,
-													disableClusteringAtZoom: 19, 
+													disableClusteringAtZoom: 20, 
 													maxClusterRadius: 200 });
 				for (var i = 0; i < data.length; i++) {
 					var marker = L.marker(new L.LatLng(data[i][0], data[i][1]));
@@ -272,7 +295,7 @@
 	var svg2 = d3.select("#accidentsByWeek")
 		.append("svg")
 			.attr("width", width + margin.left + margin.right)
-			.attr("height", height + margin.top + margin.bottom)
+			.attr("height", height + margin.top + margin.bottom + 30)
 		.append("g")
 			.attr("transform", 
 				  "translate(" + margin.left + "," + margin.top + ")");
@@ -292,34 +315,40 @@
 		.datum(data)
 		.attr("class", "line")
 		.attr("fill", "none")
-		.attr("stroke-width", 1.2)
+		.attr("stroke-width", 2)
 		.style("stroke", "yellow")
-		.style("stoke-opacity", 0.5)
+		.style("opacity", 0.9)
 		.attr("d", line);
 	
 	// Add the X Axis
 	svg2.append("g")
 		.attr("class", "x axis")
 		.attr("transform", "translate(0," + height + ")")
+		.attr("shape-rendering", "auto")
+		.style("opacity", 0.9)
 		.call(weekXAxis)
+		.attr("fill", "none")
+		.style("stroke", "black")
+		.attr("stroke-width", 1.5)
 		.append("text")
-		.attr("dy", "2.11em")
-		.attr("dx", "11.0em")
+		.attr("dy", "2.51em")
+		.attr("dx", "11.2em")
 		.style("text-anchor", "end")
-		.style("stroke", "white")
 		.text("Month");
 
 	// Add the Y Axis
 	svg2.append("g")
 		.attr("class", "y axis")
 		.call(weekYAxis)
+		.attr("fill", "none")
+		.style("stroke", "black")
+		.attr("stroke-width", 1.5)
 		.append("text")
 		.attr("transform", "rotate(-90)")
 		.attr("y", -55)
 		.attr("dy", ".81em")
 		.attr("dx", "-4.5em")
 		.style("text-anchor", "end")
-		.style("stroke", "white")
 		.text("Accidents");
 
 });
@@ -328,9 +357,9 @@
 
 <script>
 
-	var margin = {top: 20, right: 20, bottom: 70, left: 50},
+	var margin = {top: 30, right: 20, bottom: 30, left: 80},
 		width = 400 - margin.left - margin.right,
-		height = 300 - margin.top - margin.bottom;
+		height = 270 - margin.top - margin.bottom;
 
 	var x = d3.scale.ordinal().rangeRoundBands([0, width], .1);
 
@@ -348,7 +377,7 @@
 
 	var svg = d3.select("#accidentsByZone").append("svg")
 		.attr("width", width + margin.left + margin.right)
-		.attr("height", height + margin.top + margin.bottom)
+		.attr("height", height + margin.top + margin.bottom + 30)
 	  .append("g")
 		.attr("transform", 
 			  "translate(" + margin.left + "," + margin.top + ")");
@@ -362,11 +391,24 @@
 	 
 	  x.domain(data.map(function(d) { return d.zone; }));
 	  y.domain([0, d3.max(data, function(d) { return d.total; })]);
+	  
+	  svg.selectAll("bar")
+		  .data(data)
+		.enter().append("rect")
+		  .style("fill", "yellow")
+		  .style("opacity", 0.7)
+		  .attr("x", function(d) { return x(d.zone); })
+		  .attr("width", x.rangeBand())
+		  .attr("y", function(d) { return y(d.total); })
+		  .attr("height", function(d) { return height - y(d.total); });
 
 	  svg.append("g")
 		  .attr("class", "x axis")
 		  .attr("transform", "translate(0," + height + ")")
 		  .call(xAxis)
+		  .attr("fill", "none")
+		  .style("stroke", "black")
+		  .attr("stroke-width", 1.5)
 		.selectAll("text")
 		  .style("text-anchor", "end")
 		  .attr("dx", ".4em");
@@ -374,20 +416,16 @@
 	  svg.append("g")
 		  .attr("class", "y axis")
 		  .call(yAxis)
+		  .attr("fill", "none")
+		  .style("stroke", "black")
+		  .attr("stroke-width", 1.5)
 		.append("text")
-		  .attr("y", 6)
-		  .attr("dy", ".71em")
-		  .style("text-anchor", "end");
-
-	  svg.selectAll("bar")
-		  .data(data)
-		.enter().append("rect")
-		  .style("fill", "steelblue")
-		  .attr("x", function(d) { return x(d.zone); })
-		  .attr("width", x.rangeBand())
-		  .attr("y", function(d) { return y(d.total); })
-		  .attr("height", function(d) { return height - y(d.total); });
-
+		  .attr("transform", "rotate(-90)")
+		  .attr("y", -55)
+		  .attr("dy", "-.40em")
+		  .attr("dx", "-4.5em")
+		  .style("text-anchor", "end")
+		  .text("Accidents");
 	});
 
 </script>

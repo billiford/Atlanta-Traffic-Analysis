@@ -83,8 +83,9 @@ html, body {
 }
 
 #settings-pane {
+	border-radius: 6px;
 	position: absolute;
-	background-color: rgba(0, 0, 0, .6);
+	background-color: rgba(255, 255, 255, .6);
 	width: 350px;
 	height: 600px;
 	bottom: 20px;
@@ -93,10 +94,11 @@ html, body {
 }
 
 #d3-pane {
+	border-radius: 6px;
 	position: absolute;
-	background-color: rgba(0, 0, 0, .6);
+	background-color: rgba(255, 255, 255, .6);
 	width: 400px;
-	top: 20px;
+	height: 580px;
 	right: 20px;
 	bottom: 20px;
 	z-index: 1001;
@@ -226,15 +228,133 @@ html, body {
 
 body { font: 16px Arial; }
 
-.axis path,
-.axis line {
-	fill: none;
-	stroke: yellow;
-	stroke-width: 2;
-	shape-rendering: auto;
+@import url(http://fonts.googleapis.com/css?family=Maven+Pro:700);
+
+$dim: 600px;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-.axis text {
-	fill: yellow;
+.out {
+  position: relative;
+  width: $dim;
+  height: $dim;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: #eee;
 }
-			
+
+.in {
+  position: absolute;
+  width: 30%;
+  height: 30%;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.in1 {
+  bottom: 35%;
+  left: 10%;
+}
+
+.in2 {
+  bottom: 35%;
+  right: 10%;
+}
+
+.in3 {
+  bottom: 10%;
+  left: 35%;
+}
+
+.out:before,
+.in:before {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 50%;
+  background: #888;
+}
+
+.out i {
+  position: absolute;
+  top: 12%;
+  left: 38.5%;
+  font: bold 16px 'maven pro', sans-serif;
+  color: #888;
+  text-transform: uppercase;
+}
+
+.out .in i {
+  position: absolute;
+  top: auto;
+  left: 47.5%;
+  bottom: 12%;
+  font: bold 16px 'maven pro', sans-serif;
+  color: #888;
+}
+
+.marker {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1px;
+  height: 50%;
+  border-bottom: 10px solid rgba(0,0,0,.2);
+  transform-origin: top;
+}
+
+.in .marker {
+  border-bottom: 5px solid rgba(0,0,0,.2);
+}
+
+@for $i from 1 through 64 {
+  .marker:nth-child(#{$i}) {     
+    transform: rotate(6deg * $i);
+  }
+}
+
+.pointer {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 2px;
+  margin: 0 0 0 -1px;
+  background: #888;
+  transform: rotate(-180deg);
+  transform-origin: top;
+}
+
+.pointer.s {
+  height: 40%;
+  animation: time .25s infinite linear;
+}
+
+.pointer.m {
+  height: 45%;
+  animation: time 0.5s infinite linear;
+}
+
+.pointer.h {
+  height: 30%;
+  animation: time 30s infinite linear;
+}
+
+.in .pointer {
+  height: 40% !important;
+}
+
+@keyframes time {
+  100% {
+    transform: rotate(180deg);
+  }
+}
