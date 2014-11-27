@@ -109,7 +109,7 @@
 				});
 			}
 
-			parseData('/Atlanta-Accident-Analysis/csv/data_lat_long.csv', doStuff);
+			parseData('/Atlanta-Accident-Analysis/csv/data.csv', doStuff);
 
 			var colors = {
 				'pink': '#E1499A',
@@ -201,21 +201,17 @@
 													chunkedLoading: true, 
 													chunkProgress: updateProgressBar, 
 													showCoverageOnHover: true,
+													polygonOptions: {color: 'white'},
 													disableClusteringAtZoom: 20, 
 													maxClusterRadius: 200 });
 				for (var i = 0; i < data.length; i++) {
-					var marker = L.marker(new L.LatLng(data[i][0], data[i][1]));
+					var title = "Date: " + data[i][0] + "<br>" + "Time: " + data[i][8];
+					var marker = L.marker(new L.LatLng(data[i][2], data[i][3]), { title: title} );
+					marker.bindPopup(title);
 					markers.addLayer(marker);
 				}
 				map.addLayer(markers);
 			}
-
-			/*L.polygon([
-				[51.509, -0.08],
-				[51.503, -0.06],
-				[51.51, -0.047]
-			]).addTo(map).bindPopup("I am a polygon.");*/
-
 
 			var popup = L.popup();
 
