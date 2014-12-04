@@ -234,7 +234,7 @@
 			map.on('click', onMapClick);
 		}
 		
-		function showTriangle() {
+		function showGrid() {
 			var hoverStyle = {
 				fillColor: 'blue',
 				fillOpacity: 0.3,
@@ -257,19 +257,24 @@
 				});
 			}
 
-			parseData('/Atlanta-Accident-Analysis/csv/triangle.csv', doStuff);
+			var files = {1:"grid1.csv", 2:"grid2.csv", 3:"grid7.csv", 4:"grid8.csv"};
+			var x;
+			
+			for (x in files) {
+				parseData('/Atlanta-Accident-Analysis/csv/grid/' + files[x], doStuff);
+			}
 			
 			function doStuff(data) {
-				var polygon = L.polygon(data).addTo(map);
+				var rectangle = L.rectangle(data).addTo(map);
 				
-				polygon.addEventListener('click', onPolygonClick)
-				polygon.setStyle(notHoverStyle);
-				polygon.addEventListener("mouseover", function(e) {
-					polygon.setStyle(hoverStyle);
+				rectangle.addEventListener('click', onPolygonClick)
+				rectangle.setStyle(notHoverStyle);
+				rectangle.addEventListener("mouseover", function(e) {
+					rectangle.setStyle(hoverStyle);
 				});
 				
-				polygon.addEventListener("mouseout", function(e) {
-					polygon.setStyle(notHoverStyle);
+				rectangle.addEventListener("mouseout", function(e) {
+					rectangle.setStyle(notHoverStyle);
 				});
 				
 				function onMouseLeave() {
@@ -283,7 +288,7 @@
 			}
 		}
 		
-		showTriangle();
+		showGrid();
 		tileLayer();
 		createMarkers(true, true, true, true, true, true, 32264); 
 
