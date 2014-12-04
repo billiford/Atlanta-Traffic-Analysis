@@ -87,7 +87,7 @@ html, body {
 	position: absolute;
 	background-color: rgba(255, 255, 255, .6);
 	width: 350px;
-	height: 600px;
+	height: 300px;
 	bottom: 20px;
 	left: 20px;
 	z-index: 1001;
@@ -108,7 +108,8 @@ html, body {
 #accidentsByZone {
 	position: absolute;
 	width: 400px;
-	top: 300px;
+	top: 280px;
+	bottom: 10px;
 }
 
 #accidentsByWeek {
@@ -131,6 +132,10 @@ html, body {
 	top: 20px;
 	left: 20px;
 	z-index: 1002;
+}
+
+#reloadButton {
+	top: 50px;
 }
 
 #timeOfDay {
@@ -221,6 +226,21 @@ html, body {
 	height: 70px;
 	width: 70px;
 	border-style:none;
+	cursor: pointer;
+	z-index: 10000;
+}
+
+#ReloadButton {
+	opacity: .9;
+	background: url("../images/reloadbutton.png") no-repeat 0 0;
+	background-size: 310px 70px;
+	display: block;
+	margin-left: 20px;
+	margin-right: 20px;
+	margin-top: 180px;
+	height: 70px;
+	width: 310px;
+	border-style: none;
 	cursor: pointer;
 	z-index: 10000;
 }

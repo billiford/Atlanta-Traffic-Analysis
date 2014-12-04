@@ -17,6 +17,7 @@
 	<script src="JavaScript/leaflet-invert.js"></script>
 	<script src="http://d3js.org/d3.v3.min.js"></script>
 	<script src="JavaScript/multithread.js"></script>
+	<script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.2.0/leaflet-omnivore.min.js'></script>
 
 	<link rel="stylesheet" href="stylesheets/leaflet.css" />
 	<link rel="stylesheet" href="stylesheets/MarkerCluster.css" />
@@ -41,9 +42,10 @@
 				<input type="button" id="NighttimeButton" class="season">
 			</form>
 		</div>
-		<div id="checkboxes">
-			<!-- <input type="checkbox" name="accidents" id="accidentsCheckbox" class="css-checkbox" />
-			<label for="accidentsCheckbox" class="css-label">Option 1</label> -->
+		<div id="reloadButton">
+			<form>
+				<input type="button" id="ReloadButton" class="reloadButton">
+			</form>
 		</div>
 	</div>
 	<div id="d3-pane" class="d3-pane">
@@ -52,42 +54,18 @@
 	</div>
 	<div id="map"></div>
 
-	<!-- .out 
-  %i Timelapse Clock
-  .in.in1
-    %i S
-    - (1..60).each do
-      .marker
-    .pointer.s
-  .in.in2
-    %i M
-    - (1..60).each do
-      .marker
-    .pointer.m
-  .in.in3
-    %i H
-    - (1..60).each do
-      .marker
-    .pointer.h
-  - (1..60).each do
-    .marker
-  /.pointer.s
-  .pointer.m
-  .pointer.h -->
-
 	<script> 
-
 		var southWest = L.latLng(33.55064, -84.85318),
 			northEast = L.latLng(34.1878, -84.00668),
 			bounds = L.latLngBounds(southWest, northEast);
 		
-	    var map = L.map('map', {maxBounds: bounds} ).setView([33.7688889, -84.3680556], 12);
+	    var map = L.map('map', {maxBounds: bounds} ).setView([33.7688889, -84.3680556], 11);
 		var loading = document.getElementById('loading');
 		
 		function tileLayer() {
 			L.tileLayer.invert('http://a.tile.stamen.com/toner/{z}/{x}/{y}.png', {
 				maxZoom: 20,
-				minZoom: 12,
+				minZoom: 11,
 				unloadInvisibleTiles: true,
 				updateWhenIdle: false,
 				attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
@@ -97,7 +75,7 @@
 			}).addTo(map);
 		}
 		
-		function createMarkers() {		
+		function createMarkers(spring, summer, fall, winter, day, night, totalToProcess) {		
 			function parseData(url, callBack) {
 				Papa.parse(url, {
 					download: true,
@@ -180,17 +158,24 @@
 				.attr('font-size', '20px')
 				.attr('dy', '.35em');
 
+			function removeAppendLoadingCircle() {
+				$('#loading').remove();
+				$('body').append($('<div id="loading"></div>'));
+				$("#loading").fadeOut();
+			}
 			function updateProgressBar(processed, total, elapsed, layersArray) {
 				if (processed < total && elapsed > 100) {
-					foreground.attr('d', arc.endAngle(twoPi * processed / 32655));
-					front.attr('d', arc.endAngle(twoPi * processed / 32655));
-					numberText.text(formatPercent(processed / 32655));
+					$("#loading").fadeIn();
+					foreground.attr('d', arc.endAngle(twoPi * processed / totalToProcess));
+					front.attr('d', arc.endAngle(twoPi * processed / totalToProcess));
+					numberText.text(formatPercent(processed / totalToProcess));
 				}
 				if (processed === total) {
-					foreground.attr('d', arc.endAngle(twoPi * processed / 32655));
-					front.attr('d', arc.endAngle(twoPi * processed / 32655));
-					numberText.text(formatPercent(processed / 32655));
+					foreground.attr('d', arc.endAngle(twoPi * processed / totalToProcess));
+					front.attr('d', arc.endAngle(twoPi * processed / totalToProcess));
+					numberText.text(formatPercent(processed / totalToProcess));
 					$("#loading").fadeOut();
+					setTimeout(removeAppendLoadingCircle, 500)
 				}
 			}
 
@@ -201,16 +186,39 @@
 													chunkedLoading: true, 
 													chunkProgress: updateProgressBar, 
 													showCoverageOnHover: true,
-													polygonOptions: {color: 'white'},
+													polygonOptions: { color: 'white' },
 													disableClusteringAtZoom: 20, 
-													maxClusterRadius: 200 });
+													maxClusterRadius: 150 });
 				for (var i = 0; i < data.length; i++) {
-					var title = "Date: " + data[i][0] + "<br>" + "Time: " + data[i][8];
-					var marker = L.marker(new L.LatLng(data[i][2], data[i][3]), { title: title} );
-					marker.bindPopup(title);
-					markers.addLayer(marker);
+					if (summer && Date.parse(data[i][0]) > Date.parse('6/20/2013') && Date.parse(data[i][0]) < Date.parse('9/22/2013')) {
+						var title = "Date: " + data[i][0] + "<br>" + "Time: " + data[i][8];
+						var marker = L.marker(new L.LatLng(data[i][2], data[i][3]), { title: title } );
+						marker.bindPopup(title);
+						markers.addLayer(marker);
+					} else if (spring && Date.parse(data[i][0]) > Date.parse('3/19/2013') && Date.parse(data[i][0]) < Date.parse('6/21/2013')) {
+						var title = "Date: " + data[i][0] + "<br>" + "Time: " + data[i][8];
+						var marker = L.marker(new L.LatLng(data[i][2], data[i][3]), { title: title } );
+						marker.bindPopup(title);
+						markers.addLayer(marker);
+					} else if (fall && Date.parse(data[i][0]) > Date.parse('9/21/2013') && Date.parse(data[i][0]) < Date.parse('12/21/2013')) {
+						var title = "Date: " + data[i][0] + "<br>" + "Time: " + data[i][8];
+						var marker = L.marker(new L.LatLng(data[i][2], data[i][3]), { title: title } );
+						marker.bindPopup(title);
+						markers.addLayer(marker);
+					} else if (winter && (Date.parse(data[i][0]) > Date.parse('12/20/2013') || Date.parse(data[i][0]) < Date.parse('3/20/2013'))) {
+						var title = "Date: " + data[i][0] + "<br>" + "Time: " + data[i][8];
+						var marker = L.marker(new L.LatLng(data[i][2], data[i][3]), { title: title } );
+						marker.bindPopup(title);
+						markers.addLayer(marker);
+					} 
 				}
 				map.addLayer(markers);
+				
+				document.getElementById("reloadButton").onclick = function() { removeMarkers() };
+				
+				function removeMarkers() {
+					map.removeLayer(markers);
+				}
 			}
 
 			var popup = L.popup();
@@ -224,9 +232,59 @@
 
 			map.on('click', onMapClick);
 		}
+		
+		function showTriangle() {
+			var hoverStyle = {
+				fillColor: 'blue',
+				fillOpacity: 0.3,
+				opacity: 0.6
+			};
+			
+			var notHoverStyle = {
+				opacity: 0.0,
+				fillColor: 'none'
+			};
+		
+			function parseData(url, callBack) {
+				Papa.parse(url, {
+					download: true,
+					worker: true,
+					dynamicTyping: true,
+					complete: function(results) {
+						callBack(results.data);
+					}
+				});
+			}
 
+			parseData('/Atlanta-Accident-Analysis/csv/triangle.csv', doStuff);
+			
+			function doStuff(data) {
+				var polygon = L.polygon(data).addTo(map);
+				
+				polygon.addEventListener('click', onPolygonClick)
+				polygon.setStyle(notHoverStyle);
+				polygon.addEventListener("mouseover", function(e) {
+					polygon.setStyle(hoverStyle);
+				});
+				
+				polygon.addEventListener("mouseout", function(e) {
+					polygon.setStyle(notHoverStyle);
+				});
+				
+				function onMouseLeave() {
+					this.style.display = 'none';
+				}
+				
+				
+				function onPolygonClick() {
+					map.fitBounds(data);
+				}
+			}
+		}
+		
+		showTriangle();
 		tileLayer();
-		setTimeout(createMarkers, 900); 
+		createMarkers(true, true, true, true, true, true, 32264); 
 
 	</script>
 	
@@ -259,172 +317,186 @@
 				} else { $(this).fadeTo(1, 0.9); } });
 		})
 	</script>   
+	
+	<script>
+		$(document).ready(function() {
+			$('.reloadButton').click(
+			function() {
+				var totalToProcess = 0;
+				var spring, summer, fall, winter, day, night = false;
+				if ($('#SpringButton').css("opacity") > .8) { spring = true; totalToProcess += 8371; } 
+				if ($('#SummerButton').css("opacity") > .8) { summer = true; totalToProcess += 8490; } 
+				if ($('#FallButton').css("opacity") > .8) { fall = true; totalToProcess += 8167; } 
+				if ($('#WinterButton').css("opacity") > .8) { winter = true; totalToProcess += 7236; }
+				createMarkers(spring, summer, fall, winter, true, true, totalToProcess);
+			}
+		)})
+	</script>   
+	
+	<script>
 
+		// Set the dimensions of the canvas / graph
+		var margin = {top: 30, right: 20, bottom: 30, left: 60},
+			width = 400 - margin.left - margin.right,
+			height = 270 - margin.top - margin.bottom;
 
-<script>
+		// Parse the date / time
+		var parseDate = d3.time.format("%m/%d/%Y").parse; 
 
-	// Set the dimensions of the canvas / graph
-	var margin = {top: 30, right: 20, bottom: 30, left: 60},
-		width = 400 - margin.left - margin.right,
-		height = 270 - margin.top - margin.bottom;
+		// Set the ranges
+		var weekX = d3.time.scale().range([0, width]);
+		var weekY = d3.scale.linear().range([height, 0]);
 
-	// Parse the date / time
-	var parseDate = d3.time.format("%m/%d/%Y").parse; 
+		// Define the axes
+		var weekXAxis = d3.svg.axis().scale(weekX)
+			.orient("bottom").ticks(4);
 
-	// Set the ranges
-	var weekX = d3.time.scale().range([0, width]);
-	var weekY = d3.scale.linear().range([height, 0]);
+		var weekYAxis = d3.svg.axis().scale(weekY)
+			.orient("left").ticks(5);
 
-	// Define the axes
-	var weekXAxis = d3.svg.axis().scale(weekX)
-		.orient("bottom").ticks(4);
+		// Define the line
+		var line = d3.svg.line()
+			.x(function(d) { return weekX(d.date); })
+			.y(function(d) { return weekY(d.total); });
+			
+		// Adds the svg canvas
+		var svg2 = d3.select("#accidentsByWeek")
+			.append("svg")
+				.attr("width", width + margin.left + margin.right)
+				.attr("height", height + margin.top + margin.bottom + 30)
+			.append("g")
+				.attr("transform", 
+					  "translate(" + margin.left + "," + margin.top + ")");
 
-	var weekYAxis = d3.svg.axis().scale(weekY)
-		.orient("left").ticks(5);
+		// Get the data
+		d3.csv("/Atlanta-Accident-Analysis/csv/accident_totals_by_week.csv", function(error, data) {
+			data.forEach(function(d) {
+				d.date = parseDate(d.date);
+				d.total = +d.total;
+		});
 
-	// Define the line
-	var line = d3.svg.line()
-		.x(function(d) { return weekX(d.date); })
-		.y(function(d) { return weekY(d.total); });
+		// Scale the range of the data
+		weekX.domain(d3.extent(data, function(d) { return d.date; }));
+		weekY.domain([350, d3.max(data, function(d) { return d.total; })]); 
+
+		svg2.append("path")
+			.datum(data)
+			.attr("class", "line")
+			.attr("fill", "none")
+			.attr("stroke-width", 2)
+			.style("stroke", "yellow")
+			.style("opacity", 0.9)
+			.attr("d", line);
 		
-	// Adds the svg canvas
-	var svg2 = d3.select("#accidentsByWeek")
-		.append("svg")
+		// Add the X Axis
+		svg2.append("g")
+			.attr("class", "x axis")
+			.attr("transform", "translate(0," + height + ")")
+			.attr("shape-rendering", "auto")
+			.style("opacity", 0.9)
+			.call(weekXAxis)
+			.attr("fill", "none")
+			.style("stroke", "black")
+			.attr("stroke-width", 1.5)
+			.append("text")
+			.attr("dy", "2.51em")
+			.attr("dx", "11.2em")
+			.style("text-anchor", "end")
+			.text("Month");
+
+		// Add the Y Axis
+		svg2.append("g")
+			.attr("class", "y axis")
+			.call(weekYAxis)
+			.attr("fill", "none")
+			.style("stroke", "black")
+			.attr("stroke-width", 1.5)
+			.append("text")
+			.attr("transform", "rotate(-90)")
+			.attr("y", -55)
+			.attr("dy", ".81em")
+			.attr("dx", "-4.5em")
+			.style("text-anchor", "end")
+			.text("Accidents");
+
+	});
+
+	</script>
+
+	<script>
+
+		var margin = {top: 30, right: 20, bottom: 30, left: 80},
+			width = 400 - margin.left - margin.right,
+			height = 270 - margin.top - margin.bottom;
+
+		var x = d3.scale.ordinal().rangeRoundBands([0, width], .1);
+
+		var y = d3.scale.linear().range([height, 0]);
+
+		var xAxis = d3.svg.axis()
+			.scale(x)
+			.orient("bottom")
+			.ticks(6);
+
+		var yAxis = d3.svg.axis()
+			.scale(y)
+			.orient("left")
+			.ticks(5);
+
+		var svg = d3.select("#accidentsByZone").append("svg")
 			.attr("width", width + margin.left + margin.right)
 			.attr("height", height + margin.top + margin.bottom + 30)
-		.append("g")
+		  .append("g")
 			.attr("transform", 
 				  "translate(" + margin.left + "," + margin.top + ")");
 
-	// Get the data
-	d3.csv("/Atlanta-Accident-Analysis/csv/accident_totals_by_week.csv", function(error, data) {
-		data.forEach(function(d) {
-			d.date = parseDate(d.date);
-			d.total = +d.total;
-	});
+		d3.csv("/Atlanta-Accident-Analysis/csv/accident_totals_by_zone.csv", function(error, data) {
 
-	// Scale the range of the data
-	weekX.domain(d3.extent(data, function(d) { return d.date; }));
-	weekY.domain([350, d3.max(data, function(d) { return d.total; })]); 
+			data.forEach(function(d) {
+				d.zone = +d.zone;
+				d.total = +d.total;
+			});
+		 
+		  x.domain(data.map(function(d) { return d.zone; }));
+		  y.domain([0, d3.max(data, function(d) { return d.total; })]);
+		  
+		  svg.selectAll("bar")
+			  .data(data)
+			.enter().append("rect")
+			  .style("fill", "yellow")
+			  .style("opacity", 0.7)
+			  .attr("x", function(d) { return x(d.zone); })
+			  .attr("width", x.rangeBand())
+			  .attr("y", function(d) { return y(d.total); })
+			  .attr("height", function(d) { return height - y(d.total); });
 
-	svg2.append("path")
-		.datum(data)
-		.attr("class", "line")
-		.attr("fill", "none")
-		.attr("stroke-width", 2)
-		.style("stroke", "yellow")
-		.style("opacity", 0.9)
-		.attr("d", line);
-	
-	// Add the X Axis
-	svg2.append("g")
-		.attr("class", "x axis")
-		.attr("transform", "translate(0," + height + ")")
-		.attr("shape-rendering", "auto")
-		.style("opacity", 0.9)
-		.call(weekXAxis)
-		.attr("fill", "none")
-		.style("stroke", "black")
-		.attr("stroke-width", 1.5)
-		.append("text")
-		.attr("dy", "2.51em")
-		.attr("dx", "11.2em")
-		.style("text-anchor", "end")
-		.text("Month");
+		  svg.append("g")
+			  .attr("class", "x axis")
+			  .attr("transform", "translate(0," + height + ")")
+			  .call(xAxis)
+			  .attr("fill", "none")
+			  .style("stroke", "black")
+			  .attr("stroke-width", 1.5)
+			.selectAll("text")
+			  .style("text-anchor", "end")
+			  .attr("dx", ".4em");
 
-	// Add the Y Axis
-	svg2.append("g")
-		.attr("class", "y axis")
-		.call(weekYAxis)
-		.attr("fill", "none")
-		.style("stroke", "black")
-		.attr("stroke-width", 1.5)
-		.append("text")
-		.attr("transform", "rotate(-90)")
-		.attr("y", -55)
-		.attr("dy", ".81em")
-		.attr("dx", "-4.5em")
-		.style("text-anchor", "end")
-		.text("Accidents");
-
-});
-
-</script>
-
-<script>
-
-	var margin = {top: 30, right: 20, bottom: 30, left: 80},
-		width = 400 - margin.left - margin.right,
-		height = 270 - margin.top - margin.bottom;
-
-	var x = d3.scale.ordinal().rangeRoundBands([0, width], .1);
-
-	var y = d3.scale.linear().range([height, 0]);
-
-	var xAxis = d3.svg.axis()
-		.scale(x)
-		.orient("bottom")
-		.ticks(6);
-
-	var yAxis = d3.svg.axis()
-		.scale(y)
-		.orient("left")
-		.ticks(5);
-
-	var svg = d3.select("#accidentsByZone").append("svg")
-		.attr("width", width + margin.left + margin.right)
-		.attr("height", height + margin.top + margin.bottom + 30)
-	  .append("g")
-		.attr("transform", 
-			  "translate(" + margin.left + "," + margin.top + ")");
-
-	d3.csv("/Atlanta-Accident-Analysis/csv/accident_totals_by_zone.csv", function(error, data) {
-
-		data.forEach(function(d) {
-			d.zone = +d.zone;
-			d.total = +d.total;
+		  svg.append("g")
+			  .attr("class", "y axis")
+			  .call(yAxis)
+			  .attr("fill", "none")
+			  .style("stroke", "black")
+			  .attr("stroke-width", 1.5)
+			.append("text")
+			  .attr("transform", "rotate(-90)")
+			  .attr("y", -55)
+			  .attr("dy", "-.40em")
+			  .attr("dx", "-4.5em")
+			  .style("text-anchor", "end")
+			  .text("Accidents");
 		});
-	 
-	  x.domain(data.map(function(d) { return d.zone; }));
-	  y.domain([0, d3.max(data, function(d) { return d.total; })]);
-	  
-	  svg.selectAll("bar")
-		  .data(data)
-		.enter().append("rect")
-		  .style("fill", "yellow")
-		  .style("opacity", 0.7)
-		  .attr("x", function(d) { return x(d.zone); })
-		  .attr("width", x.rangeBand())
-		  .attr("y", function(d) { return y(d.total); })
-		  .attr("height", function(d) { return height - y(d.total); });
 
-	  svg.append("g")
-		  .attr("class", "x axis")
-		  .attr("transform", "translate(0," + height + ")")
-		  .call(xAxis)
-		  .attr("fill", "none")
-		  .style("stroke", "black")
-		  .attr("stroke-width", 1.5)
-		.selectAll("text")
-		  .style("text-anchor", "end")
-		  .attr("dx", ".4em");
-
-	  svg.append("g")
-		  .attr("class", "y axis")
-		  .call(yAxis)
-		  .attr("fill", "none")
-		  .style("stroke", "black")
-		  .attr("stroke-width", 1.5)
-		.append("text")
-		  .attr("transform", "rotate(-90)")
-		  .attr("y", -55)
-		  .attr("dy", "-.40em")
-		  .attr("dx", "-4.5em")
-		  .style("text-anchor", "end")
-		  .text("Accidents");
-	});
-
-</script>
+	</script>
 
 </body>
 </html>
