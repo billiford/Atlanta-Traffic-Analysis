@@ -190,22 +190,23 @@
 													disableClusteringAtZoom: 20, 
 													maxClusterRadius: 150 });
 				for (var i = 0; i < data.length; i++) {
-					if (summer && Date.parse(data[i][0]) > Date.parse('6/20/2013') && Date.parse(data[i][0]) < Date.parse('9/22/2013')) {
+					var date = Date.parse(data[i][0]);
+					if (summer && date > Date.parse('6/20/2013') && date < Date.parse('9/22/2013')) {
 						var title = "Date: " + data[i][0] + "<br>" + "Time: " + data[i][8];
 						var marker = L.marker(new L.LatLng(data[i][2], data[i][3]), { title: title } );
 						marker.bindPopup(title);
 						markers.addLayer(marker);
-					} else if (spring && Date.parse(data[i][0]) > Date.parse('3/19/2013') && Date.parse(data[i][0]) < Date.parse('6/21/2013')) {
+					} else if (spring && date > Date.parse('3/19/2013') && date < Date.parse('6/21/2013')) {
 						var title = "Date: " + data[i][0] + "<br>" + "Time: " + data[i][8];
 						var marker = L.marker(new L.LatLng(data[i][2], data[i][3]), { title: title } );
 						marker.bindPopup(title);
 						markers.addLayer(marker);
-					} else if (fall && Date.parse(data[i][0]) > Date.parse('9/21/2013') && Date.parse(data[i][0]) < Date.parse('12/21/2013')) {
+					} else if (fall && date > Date.parse('9/21/2013') && date < Date.parse('12/21/2013')) {
 						var title = "Date: " + data[i][0] + "<br>" + "Time: " + data[i][8];
 						var marker = L.marker(new L.LatLng(data[i][2], data[i][3]), { title: title } );
 						marker.bindPopup(title);
 						markers.addLayer(marker);
-					} else if (winter && (Date.parse(data[i][0]) > Date.parse('12/20/2013') || Date.parse(data[i][0]) < Date.parse('3/20/2013'))) {
+					} else if (winter && (date > Date.parse('12/20/2013') || date < Date.parse('3/20/2013'))) {
 						var title = "Date: " + data[i][0] + "<br>" + "Time: " + data[i][8];
 						var marker = L.marker(new L.LatLng(data[i][2], data[i][3]), { title: title } );
 						marker.bindPopup(title);
