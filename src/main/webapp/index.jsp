@@ -352,7 +352,7 @@
 	<script>
 
 		// Set the dimensions of the canvas / graph
-		var margin = {top: 30, right: 20, bottom: 30, left: 60},
+		var margin = {top: 30, right: 20, bottom: 30, left: 80},
 			width = 400 - margin.left - margin.right,
 			height = 270 - margin.top - margin.bottom;
 
