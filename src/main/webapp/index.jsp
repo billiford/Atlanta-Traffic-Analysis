@@ -13,11 +13,8 @@
 	<script src="JavaScript/leaflet.markercluster-src.js"></script>
 	<script src="JavaScript/papaparse.min.js"></script>
 	<script src="JavaScript/jquery-2.1.1.js"></script>
-	<script src="JavaScript/TileLayer.Grayscale.js"></script>
 	<script src="JavaScript/leaflet-invert.js"></script>
 	<script src="http://d3js.org/d3.v3.min.js"></script>
-	<script src="JavaScript/multithread.js"></script>
-	<script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.2.0/leaflet-omnivore.min.js'></script>
 
 	<link rel="stylesheet" href="stylesheets/leaflet.css" />
 	<link rel="stylesheet" href="stylesheets/MarkerCluster.css" />
@@ -357,7 +354,7 @@
 	<script>
 
 		// Set the dimensions of the canvas / graph
-		var margin = {top: 30, right: 20, bottom: 30, left: 80},
+		var margin = {top: 30, right: 20, bottom: 20, left: 80},
 			width = 400 - margin.left - margin.right,
 			height = 270 - margin.top - margin.bottom;
 
@@ -420,8 +417,8 @@
 			.style("stroke", "black")
 			.attr("stroke-width", 1.5)
 			.append("text")
-			.attr("dy", "2.51em")
-			.attr("dx", "11.2em")
+			.attr("dy", "2.3em")
+			.attr("dx", "10.5em")
 			.style("text-anchor", "end")
 			.text("Month");
 
@@ -435,7 +432,7 @@
 			.append("text")
 			.attr("transform", "rotate(-90)")
 			.attr("y", -55)
-			.attr("dy", ".81em")
+			.attr("dy", "-.4em")
 			.attr("dx", "-4.5em")
 			.style("text-anchor", "end")
 			.text("Accidents");
@@ -446,7 +443,7 @@
 
 	<script>
 
-		var margin = {top: 30, right: 20, bottom: 30, left: 80},
+		var margin = {top: 20, right: 20, bottom: 30, left: 80},
 			width = 400 - margin.left - margin.right,
 			height = 270 - margin.top - margin.bottom;
 
@@ -498,9 +495,11 @@
 			  .attr("fill", "none")
 			  .style("stroke", "black")
 			  .attr("stroke-width", 1.5)
-			.selectAll("text")
+			  .append("text")
+			  .attr("dy", "2.3em")
+			  .attr("dx", "10.5em")
 			  .style("text-anchor", "end")
-			  .attr("dx", ".4em");
+			  .text("Zone");
 
 		  svg.append("g")
 			  .attr("class", "y axis")
