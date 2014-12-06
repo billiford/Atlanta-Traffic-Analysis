@@ -38,8 +38,8 @@
 		</div>
 		<div id="timeOfDay">
 			<form>
-				<input type="button" id="DaytimeButton" class="season">
 				<input type="button" id="NighttimeButton" class="season">
+				<input type="button" id="DaytimeButton" class="season">
 			</form>
 		</div>
 		<div id="reloadButton">
@@ -51,6 +51,12 @@
 	<div id="d3-pane" class="d3-pane">
 		<div id="accidentsByWeek" class="accidentsByWeek"></div>
 		<div id="accidentsByZone" class="accidentsByZone"></div>
+	</div>
+	<div id="d3-toggle-btn" class="d3-toggle-btn">
+		<img src="/Atlanta-Accident-Analysis/images/d3-toggle-btn.gif" id="toggle-btn-img">
+	</div>
+	<div id="settings-pane-toggle-btn" class="settings-pane-toggle-btn">
+		<img src="/Atlanta-Accident-Analysis/images/settings-pane-toggle-btn.gif" id="toggle-btn-img">
 	</div>
 	<div id="map"></div>
 
@@ -163,6 +169,7 @@
 				$('body').append($('<div id="loading"></div>'));
 				$("#loading").fadeOut();
 			}
+			
 			function updateProgressBar(processed, total, elapsed, layersArray) {
 				if (processed < total && elapsed > 100) {
 					$("#loading").fadeIn();
@@ -236,14 +243,16 @@
 		
 		function showGrid() {
 			var hoverStyle = {
-				fillColor: 'blue',
+				color: 'gray',
+				fillColor: 'gray',
 				fillOpacity: 0.3,
-				opacity: 0.6
+				opacity: 0.4,
+				weight: 2
 			};
 			
 			var notHoverStyle = {
 				opacity: 0.0,
-				fillColor: 'none'
+				fillOpacity: 0.0
 			};
 		
 			function parseData(url, callBack) {
@@ -267,10 +276,11 @@
 			function doStuff(data) {
 				var rectangle = L.rectangle(data).addTo(map);
 				
-				rectangle.addEventListener('click', onPolygonClick)
+				rectangle.addEventListener('click', onPolygonClick);
 				rectangle.setStyle(notHoverStyle);
 				rectangle.addEventListener("mouseover", function(e) {
 					rectangle.setStyle(hoverStyle);
+					
 				});
 				
 				rectangle.addEventListener("mouseout", function(e) {
@@ -502,6 +512,24 @@
 			  .text("Accidents");
 		});
 
+	</script>
+	
+	<script>
+	$(function(){
+		$('#d3-toggle-btn').click(function(){
+			$('#d3-pane').stop().slideToggle(500);
+			return false;
+		});
+	});
+	</script>
+	
+	<script>
+	$(function(){
+		$('#settings-pane-toggle-btn').click(function(){
+			$('#settings-pane').stop().slideToggle(500);
+			return false;
+		});
+	});
 	</script>
 
 </body>
