@@ -23,6 +23,7 @@
 	<link rel="stylesheet" href="stylesheets/MarkerCluster.css" />
 	<link rel="stylesheet" href="stylesheets/MarkerCluster.Default.css" />
 	<link rel="stylesheet" href="stylesheets/style.css" />
+	<link rel="shortcut icon" href="/Atlanta-Accident-Analysis/images/shortcutIcon.ico">
 
 </head>
 <body>
@@ -196,33 +197,35 @@
 													polygonOptions: { color: 'white' },
 													disableClusteringAtZoom: 20, 
 													maxClusterRadius: 150 });
+				
 				for (var i = 0; i < data.length; i++) {
 					var date = Date.parse(data[i][0]);
+					var time = Date.parse(data[i][0] + " " + data[i][8]);
 					if (summer && date > Date.parse('6/20/2013') && date < Date.parse('9/22/2013')) {
-						var title = "Date: " + data[i][0] + "<br>" + "Time: " + data[i][8];
-						var marker = L.marker(new L.LatLng(data[i][2], data[i][3]), { title: title } );
-						marker.bindPopup(title);
-						markers.addLayer(marker);
+						if (day && time > Date.parse(data[i][0] + " 6:00:00 AM") && time < Date.parse(data[i][0] + " 6:00:00 PM")) { addMarker(data, i);}
+						else if (night && (time < Date.parse(data[i][0] + " 6:00:01 AM") || time > Date.parse(data[i][0] + " 5:59:59 PM"))) { addMarker(data, i); }
 					} else if (spring && date > Date.parse('3/19/2013') && date < Date.parse('6/21/2013')) {
-						var title = "Date: " + data[i][0] + "<br>" + "Time: " + data[i][8];
-						var marker = L.marker(new L.LatLng(data[i][2], data[i][3]), { title: title } );
-						marker.bindPopup(title);
-						markers.addLayer(marker);
+						if (day && time > Date.parse(data[i][0] + " 6:00:00 AM") && time < Date.parse(data[i][0] + " 6:00:00 PM")) { addMarker(data, i); }
+						else if (night && (time < Date.parse(data[i][0] + " 6:00:01 AM") || time > Date.parse(data[i][0] + " 5:59:59 PM"))) { addMarker(data, i); }
 					} else if (fall && date > Date.parse('9/21/2013') && date < Date.parse('12/21/2013')) {
-						var title = "Date: " + data[i][0] + "<br>" + "Time: " + data[i][8];
-						var marker = L.marker(new L.LatLng(data[i][2], data[i][3]), { title: title } );
-						marker.bindPopup(title);
-						markers.addLayer(marker);
+						if (day && time > Date.parse(data[i][0] + " 6:00:00 AM") && time < Date.parse(data[i][0] + " 6:00:00 PM")) { addMarker(data, i); }
+						else if (night && (time < Date.parse(data[i][0] + " 6:00:01 AM") || time > Date.parse(data[i][0] + " 5:59:59 PM"))) { addMarker(data, i); }
 					} else if (winter && (date > Date.parse('12/20/2013') || date < Date.parse('3/20/2013'))) {
-						var title = "Date: " + data[i][0] + "<br>" + "Time: " + data[i][8];
-						var marker = L.marker(new L.LatLng(data[i][2], data[i][3]), { title: title } );
-						marker.bindPopup(title);
-						markers.addLayer(marker);
+						if (day && time > Date.parse(data[i][0] + " 6:00:00 AM") && time < Date.parse(data[i][0] + " 6:00:00 PM")) { addMarker(data, i);} 
+						else if (night && (time < Date.parse(data[i][0] + " 6:00:01 AM") || time > Date.parse(data[i][0] + " 5:59:59 PM"))) { addMarker(data, i); }
 					} 
 				}
+
 				map.addLayer(markers);
 				
 				document.getElementById("reloadButton").onclick = function() { removeMarkers() };
+				
+				function addMarker(data, i) {
+					var title = "Date: " + data[i][0] + "<br>" + "Time: " + data[i][8];
+					var marker = L.marker(new L.LatLng(data[i][2], data[i][3]), { title: title } );
+					marker.bindPopup(title);
+					markers.addLayer(marker);
+				}
 				
 				function removeMarkers() {
 					map.removeLayer(markers);
@@ -344,7 +347,9 @@
 				if ($('#SummerButton').css("opacity") > .8) { summer = true; totalToProcess += 8490; } 
 				if ($('#FallButton').css("opacity") > .8) { fall = true; totalToProcess += 8167; } 
 				if ($('#WinterButton').css("opacity") > .8) { winter = true; totalToProcess += 7236; }
-				createMarkers(spring, summer, fall, winter, true, true, totalToProcess);
+				if ($('#DaytimeButton').css("opacity") > .8) { day = true; }
+				if ($('#NighttimeButton').css("opacity") > .8) {night = true; }
+				createMarkers(spring, summer, fall, winter, day, night, totalToProcess);
 			}
 		)})
 	</script>   
