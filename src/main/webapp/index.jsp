@@ -16,6 +16,7 @@
 	<script src="JavaScript/leaflet-invert.js"></script>
 	<script src="http://d3js.org/d3.v3.min.js"></script>
 
+	<link rel="stylesheet" href="stylesheets/custom-markers.css" />
 	<link rel="stylesheet" href="stylesheets/leaflet.css" />
 	<link rel="stylesheet" href="stylesheets/MarkerCluster.css" />
 	<link rel="stylesheet" href="stylesheets/MarkerCluster.Default.css" />
@@ -185,7 +186,16 @@
 			}
 
 			function doStuff(data) {
-				var markers = L.markerClusterGroup({ spiderfyOnMaxZoom: false, 
+				var markers = L.markerClusterGroup({ iconCreateFunction: function(cluster) {
+															var count = cluster.getChildCount();
+															var digits = (count + '').length;
+															return new L.DivIcon({
+																html: count,
+																className:'cluster digits-' + digits,
+																iconSize: null
+															});
+													},
+													spiderfyOnMaxZoom: false, 
 													chunkinterval: 300, 
 													chunkdelay: 25, 
 													chunkedLoading: true, 
