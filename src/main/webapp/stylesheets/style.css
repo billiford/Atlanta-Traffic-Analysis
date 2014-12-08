@@ -412,3 +412,55 @@ $dim: 600px;
     transform: rotate(180deg);
   }
 }
+
+h2 {
+	margin: 0px;
+	padding: 0px;
+}
+#label-container {
+	position: fixed;
+	top: 20px;
+	left: 45px;
+	position: absolute;
+	width: 300px;
+	height: 100px;
+	z-index: 1001;
+}
+.season-label {
+  display: inline;
+  padding: .2em .6em .3em;
+  font-size: 75%;
+  font-weight: bold;
+  line-height: 1;
+  color: #ffffff;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: .25em;
+  margin-right: 3px;
+}
+a.season-label:hover,
+a.season-label:focus {
+  color: #ffffff;
+  text-decoration: none;
+  cursor: pointer;
+}
+.season-label:empty {
+  display: none;
+}
+.btn .season-label {
+  position: relative;
+  top: -1px;
+}
+.season-label-spring {
+  background-color: #7eca44;
+}
+.season-label-winter {
+  background-color: #5bc0de;
+}
+.season-label-summer {
+  background-color: #d5cf67;
+}
+.season-label-fall {
+  background-color: #f0ad4e;
+}

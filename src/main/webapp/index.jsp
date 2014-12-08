@@ -57,6 +57,7 @@
 	<div id="settings-pane-toggle-btn" class="settings-pane-toggle-btn">
 		<img src="/Atlanta-Accident-Analysis/images/settings-pane-toggle-btn.gif" id="toggle-btn-img">
 	</div>
+	<h2><div id="label-container"><span class="season-label season-label-spring">Spring</span><span class="season-label season-label-summer">Summer</span><span class="season-label season-label-fall">Fall</span><span class="season-label season-label-winter">Winter</span></div></h2>
 	<div id="map"></div>
 
 	<script> 
@@ -79,7 +80,22 @@
 				id: 'examples.map-i875mjb7'
 			}).addTo(map);
 		}
-		
+		function createLabels() {
+			$("#label-container").empty();
+			if ($('#SpringButton').css("opacity") > .8) {
+				$("#label-container").append('<span class="season-label season-label-spring">Spring</span>');
+			}
+			if ($('#SummerButton').css("opacity") > .8) {
+				$("#label-container").append('<span class="season-label season-label-summer">Summer</span>');
+			}	
+			if ($('#FallButton').css("opacity") > .8) {
+				$("#label-container").append('<span class="season-label season-label-fall">Fall</span>');
+			}
+			if ($('#WinterButton').css("opacity") > .8) {
+				$("#label-container").append('<span class="season-label season-label-winter">Winter</span>');
+			}
+
+		}
 		function createMarkers(spring, summer, fall, winter, day, night, totalToProcess) {		
 			function parseData(url, callBack) {
 				Papa.parse(url, {
@@ -357,9 +373,12 @@
 				if ($('#DaytimeButton').css("opacity") > .8) { day = true; }
 				if ($('#NighttimeButton').css("opacity") > .8) {night = true; }
 				createMarkers(spring, summer, fall, winter, day, night, totalToProcess);
+				createLabels();
 			}
 		)})
 	</script>   
+
+
 	
 	<script>
 
