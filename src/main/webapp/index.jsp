@@ -57,7 +57,7 @@
 	<div id="settings-pane-toggle-btn" class="settings-pane-toggle-btn">
 		<img src="/Atlanta-Accident-Analysis/images/settings-pane-toggle-btn.gif" id="toggle-btn-img">
 	</div>
-	<h2><div id="label-container"><span class="season-label season-label-spring">Spring</span><span class="season-label season-label-summer">Summer</span><span class="season-label season-label-fall">Fall</span><span class="season-label season-label-winter">Winter</span></div></h2>
+	<h2><div id="label-container"><span class="season-label season-label-spring">Spring</span><span class="season-label season-label-summer">Summer</span><span class="season-label season-label-fall">Fall</span><span class="season-label season-label-winter">Winter</span><span class="season-label season-label-day">Daytime</span><span class="season-label season-label-night">Nighttime</span></div></h2>
 	<div id="map"></div>
 
 	<script> 
@@ -94,7 +94,12 @@
 			if ($('#WinterButton').css("opacity") > .8) {
 				$("#label-container").append('<span class="season-label season-label-winter">Winter</span>');
 			}
-
+			if ($('#DaytimeButton').css("opacity") > .8) {
+				$("#label-container").append('<span class="season-label season-label-day">Daytime</span>');
+			}
+			if ($('#NighttimeButton').css("opacity") > .8) {
+				$("#label-container").append('<span class="season-label season-label-night">Nighttime</span>');
+			}
 		}
 		function createMarkers(spring, summer, fall, winter, day, night, totalToProcess) {		
 			function parseData(url, callBack) {
@@ -366,12 +371,24 @@
 			function() {
 				var totalToProcess = 0;
 				var spring, summer, fall, winter, day, night = false;
-				if ($('#SpringButton').css("opacity") > .8) { spring = true; totalToProcess += 8371; } 
-				if ($('#SummerButton').css("opacity") > .8) { summer = true; totalToProcess += 8490; } 
-				if ($('#FallButton').css("opacity") > .8) { fall = true; totalToProcess += 8167; } 
-				if ($('#WinterButton').css("opacity") > .8) { winter = true; totalToProcess += 7236; }
-				if ($('#DaytimeButton').css("opacity") > .8) { day = true; }
-				if ($('#NighttimeButton').css("opacity") > .8) {night = true; }
+				if ($('#SpringButton').css("opacity") > .8) { spring = true; 
+					if ($('#DaytimeButton').css("opacity") > .8) { day = true; totalToProcess += 5535; }
+					if ($('#NighttimeButton').css("opacity") > .8) { night = true; totalToProcess += 2908; }
+				} 
+				if ($('#SummerButton').css("opacity") > .8) { summer = true; 
+					if ($('#DaytimeButton').css("opacity") > .8) { day = true; totalToProcess += 5523; }
+					if ($('#NighttimeButton').css("opacity") > .8) { night = true; totalToProcess += 2904; }
+				} 
+				if ($('#FallButton').css("opacity") > .8) { fall = true; 
+					if ($('#DaytimeButton').css("opacity") > .8) { day = true; totalToProcess += 5417; }
+					if ($('#NighttimeButton').css("opacity") > .8) { night = true; totalToProcess += 2802; }
+				} 
+				if ($('#WinterButton').css("opacity") > .8) { winter = true; 
+					if ($('#DaytimeButton').css("opacity") > .8) { day = true; totalToProcess += 4607; }
+					if ($('#NighttimeButton').css("opacity") > .8) { night = true; totalToProcess += 2550; }
+				}
+				if ($('#DaytimeButton').css("opacity") > .8) { day = true;}
+				if ($('#NighttimeButton').css("opacity") > .8) {night = true;}
 				createMarkers(spring, summer, fall, winter, day, night, totalToProcess);
 				createLabels();
 			}

@@ -464,3 +464,9 @@ a.season-label:focus {
 .season-label-fall {
   background-color: #f0ad4e;
 }
+.season-label-day {
+  background-color: #b6b6b6;
+}
+.season-label-night {
+  background-color: #454545;
+}
